@@ -21,7 +21,8 @@ level=json.loads(file_contents)
 print(level)
 
 gamedata = {
-    "level":level
+    "level":level,
+    "players":[{"x":level["player_x"], "y":level["player_y"], "image":"assets/players/player1.png"},{"x":level["player_x"], "y":level["player_y"], "image":"assets/players/player2.png"}]
 }
 
 gamedata_string = json.dumps(gamedata)
