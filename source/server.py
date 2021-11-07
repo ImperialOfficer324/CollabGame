@@ -9,7 +9,8 @@ server.bind(address)
 
 server.listen(5)
 
-client,addr = server.accept()
+client1,addr1 = server.accept()
+client2,addr2 = server.accept()
 #data = client.recv(max_size)
 
 file_contents = ""
@@ -27,7 +28,11 @@ gamedata = {
 
 gamedata_string = json.dumps(gamedata)
 
-client.sendall(bytes(gamedata_string,"utf-8"))
+client1.sendall(0)
+client1.sendall(bytes(gamedata_string,"utf-8"))
+client2.sendall(1)
+client2.sendall(bytes(gamedata_string,"utf-8"))
 
-client.close()
+client1.close()
+client2.close()
 server.close()
