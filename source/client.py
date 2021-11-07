@@ -44,7 +44,7 @@ def display_tiles():
     return 1
 
 def display_players():
-    if player_id is 0:
+    if player_id == 0:
         p1 = pygame.Surface((80, 80))
         p1.blit(players[1], (0, 0), (0, 0, 50, 50))
         p0 = pygame.Surface((80, 80))
