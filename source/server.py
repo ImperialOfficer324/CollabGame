@@ -28,9 +28,12 @@ gamedata = {
 
 gamedata_string = json.dumps(gamedata)
 
-client1.sendall(0)
+zero = "0"
+one = "1"
+
+#client1.sendall(zero.encode())
 client1.sendall(bytes(gamedata_string,"utf-8"))
-client2.sendall(1)
+#client2.sendall(one.encode())
 client2.sendall(bytes(gamedata_string,"utf-8"))
 
 client1.close()
