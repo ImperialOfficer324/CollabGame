@@ -12,7 +12,7 @@ server.listen(5)
 client,addr = server.accept()
 #data = client.recv(max_size)
 
-file_contents=""
+file_contents = ""
 
 with open('levels/test_level.json', 'r') as level_file:
     for line in level_file:
@@ -20,9 +20,13 @@ with open('levels/test_level.json', 'r') as level_file:
 level=json.loads(file_contents)
 print(level)
 
-gamedata={
-    "level":level,
+gamedata = {
+    "level":level
 }
+
+gamedata_string = json.dumps(gamedata)
+
+client.sendall(bytes(gamedata_string,"utf-8"))
 
 client.close()
 server.close()

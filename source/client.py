@@ -1,6 +1,7 @@
 #imports
 import socket
 import pygame
+import json
 import os
 
 #constants
@@ -16,6 +17,9 @@ client.connect(server_address)
 
 #game variables
 game_state = 1
+gamedata_string = str(client.recv(max_size), "utf-8")
+game_data = json.loads(gamedata_string)
+print(game_data)
 
 #setup window
 pygame.init()
