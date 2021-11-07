@@ -32,7 +32,7 @@ tiles = [pygame.transform.scale(pygame.image.load(f"assets/tiles/sky.png"),(50,5
         pygame.transform.scale(pygame.image.load(f"assets/tiles/ground.png"),(50,50))]
 
 def display_tiles():
-    for row_count,row in enumerate(game_data["grid"]):
+    for row_count,row in enumerate(game_data["level"]["grid"]):
         for col_count,column in enumerate(row):
             print(column)
             window.blit(tiles[column],(col_count * 50,row_count * 50))
