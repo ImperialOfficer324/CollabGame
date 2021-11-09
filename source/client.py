@@ -69,6 +69,7 @@ while game_state != 0:
     if game_state == 1: # main game loop
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                messages.send_message("quit",client)
                 client.close()
                 pygame.quit()
                 quit()
