@@ -34,8 +34,8 @@ pygame.display.set_caption("Collaboration Game")
 tiles = [pygame.transform.scale(pygame.image.load("assets/tiles/sky.png"),(50,50)),
         pygame.transform.scale(pygame.image.load("assets/tiles/ground.png"),(50,50))]
 
-players = [pygame.transform.scale(pygame.image.load(game_data["players"][0]["image"]),(50,100)),
-            pygame.transform.scale(pygame.image.load(game_data["players"][1]["image"]),(50,100))]
+players = [pygame.transform.scale(pygame.image.load(game_data["players"][0]["image"]),(450,100)),
+            pygame.transform.scale(pygame.image.load(game_data["players"][1]["image"]),(450,100))]
 
 def display_tiles():
     for row_count,row in enumerate(game_data["level"]["grid"]):
@@ -62,7 +62,7 @@ def listen_to_server(client):
         game_data = messages.parse_message(msg)
 
 server_listener = threading.Thread(target=listen_to_server)
-server_listener
+server_listener.start()
 
 while game_state != 0:
     clock.tick(60)
