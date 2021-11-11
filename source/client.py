@@ -97,9 +97,6 @@ while game_state != 0:
             tile_1 = game_data['level']['grid'][game_data['players'][player_id]["y"]//50][new_x//50]
             #tile_2 = game_data['level']["grid"][(game_data["players"][player_id]["y"]+50)//50][new_x//50]
 
-            print(f"the tile at {new_x//50},{player_y//50} is {tile_1}")
-            #print(f"the tile at {new_x//50},{(player_y+50)//50} is {tile_2}")
-
             if tile_1 != 1:# and tile_2 != 1:
                 game_data["players"][player_id]["x"]+=1
                 messages.send_message(f"move {player_id} 1",client)
@@ -110,15 +107,10 @@ while game_state != 0:
             tile_1 = game_data['level']['grid'][game_data['players'][player_id]["y"]//50][new_x//50]
             #tile_2 = game_data['level']["grid"][(game_data["players"][player_id]["y"]+50)//50][new_x//50]
 
-            print(f"the tile at {new_x//50},{player_y//50} is {tile_1}")
-            #print(f"the tile at {new_x//50},{(player_y+50)//50} is {tile_2}")
-
             if tile_1 != 1:# and tile_2 != 1:
                 game_data["players"][player_id]["x"]-=1
                 messages.send_message(f"move {player_id} -1",client)
-            messages.send_message(f"move {player_id} 1",client)
-            #send_message("quit",client)
-            game_data["players"][player_id]["x"]+=1
+                
         animation_counter += 1
         if animation_counter == 10:
             if player1_animation == "idle":
