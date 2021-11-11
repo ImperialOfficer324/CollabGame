@@ -1,8 +1,9 @@
 import socket
 def send_message(event,client):
-    client.sendall(event.encode())
+    client.sendall(bytes(event,"utf-8"))
 
 def parse_message(message,game_data):
+    message = message.decode("utf-8")
     if "move " in message:
         message = message.replace("move ","")
         player_id = int(message.split(" ")[0])

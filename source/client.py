@@ -19,7 +19,8 @@ client.connect(server_address)
 
 #game variables
 game_state = 1
-player_id = 0#int(client.recv(max_size).decode())
+#player_id = int(client.recv(24).decode())
+player_id = 0
 gamedata_string = str(client.recv(max_size), "utf-8")
 game_data = json.loads(gamedata_string)
 print(game_data)
@@ -59,9 +60,9 @@ def listen_to_server(client):
     global game_data
     while game_state:
         msg = client.recv(max_size)
-        game_data = messages.parse_message(msg)
+        game_data = messages.parse_message(msg,game_data)
 
-server_listener = threading.Thread(target=listen_to_server)
+server_listener = threading.Thread(target=lambda:listen_to_server(client))
 server_listener.start()
 
 while game_state != 0:
@@ -75,8 +76,13 @@ while game_state != 0:
                 quit()
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RIGHT]:
-            messages.send_message(f"move {player_id} 10",client)
+            messages.send_message(f"move {player_id} 1",client)
+            #send_message("quit",client)
             game_data["players"][player_id]["x"]+=1
+        if keys[pygame.K_LEFT]:
+            messages.send_message(f"move {player_id} -1",client)
+            #send_message("quit",client)
+            game_data["players"][player_id]["x"]-=1
         display_tiles()
         display_players()
         pygame.display.update()
