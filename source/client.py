@@ -46,13 +46,23 @@ def display_tiles():
             window.blit(tiles[column],(col_count * 50,row_count * 50))
     return 1
 
+player1_animation = "idle"
+player2_animation = "idle"
+player1_animation_state = 0
+player2_animation_state = 0
+player1_animation_direction = 1
+player2_animation_direction = 1
+animation_counter = 0
+
 def display_players():
-    p1 = pygame.Surface((80, 80))
+    if player1_animation == "idle":
+        offset = 0
+    p1 = pygame.Surface((50, 50))
     p1.set_colorkey((0,0,0))
-    p1.blit(players[1], (0, 0), (0, 0, 50, 50))
-    p0 = pygame.Surface((80, 80))
+    p1.blit(players[1], (0, 0), ((player2_animation_state + offset) * 50, 0, 50, 50))
+    p0 = pygame.Surface((50, 50))
     p0.set_colorkey((0,0,0))
-    p0.blit(players[0], (0, 0), (0, 0, 50, 50))
+    p0.blit(players[0], (0, 0), ((player1_animation_state + offset) * 50, 0, 50, 50))
     if player_id == 0:
         window.blit(p1,(int(game_data["players"][1]["x"]),int(game_data["players"][1]["y"])))
         window.blit(p0,(int(game_data["players"][0]["x"]),int(game_data["players"][0]["y"])))
@@ -106,6 +116,25 @@ while game_state != 0:
             if tile_1 != 1:# and tile_2 != 1:
                 game_data["players"][player_id]["x"]-=1
                 messages.send_message(f"move {player_id} -1",client)
+            messages.send_message(f"move {player_id} 1",client)
+            #send_message("quit",client)
+            game_data["players"][player_id]["x"]+=1
+        animation_counter += 1
+        if animation_counter == 10:
+            if player1_animation == "idle":
+                if player1_animation_state == 2:
+                    player1_animation_direction = -1
+                if player1_animation_state == 0:
+                    player1_animation_direction = 1
+                player1_animation_state += player1_animation_direction
+            if player2_animation == "idle":
+                if player2_animation_state == 2:
+                    player2_animation_direction = -1
+                if player2_animation_state == 0:
+                    player2_animation_direction = 1
+                player2_animation_state += player2_animation_direction
+            animation_counter = 0
+            
         display_tiles()
         display_players()
         pygame.display.update()
