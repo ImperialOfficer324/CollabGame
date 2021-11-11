@@ -48,8 +48,10 @@ def display_tiles():
 
 def display_players():
     p1 = pygame.Surface((80, 80))
+    p1.set_colorkey((0,0,0))
     p1.blit(players[1], (0, 0), (0, 0, 50, 50))
     p0 = pygame.Surface((80, 80))
+    p0.set_colorkey((0,0,0))
     p0.blit(players[0], (0, 0), (0, 0, 50, 50))
     if player_id == 0:
         window.blit(p1,(int(game_data["players"][1]["x"]),int(game_data["players"][1]["y"])))
