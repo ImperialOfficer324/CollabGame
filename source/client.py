@@ -75,6 +75,7 @@ def listen_to_server(client):
     while game_state:
         msg = client.recv(max_size)
         game_data = messages.parse_message(msg,game_data)
+        print(f'recieved message {str(msg,"utf-8")}')
 
 server_listener = threading.Thread(target=lambda:listen_to_server(client))
 server_listener.start()
@@ -90,13 +91,34 @@ while game_state != 0:
                 quit()
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RIGHT]:
+            new_x = (game_data["players"][player_id]["x"]+1)+50
+            player_y = game_data['players'][player_id]["y"]
+
+            tile_1 = game_data['level']['grid'][game_data['players'][player_id]["y"]//50][new_x//50]
+            #tile_2 = game_data['level']["grid"][(game_data["players"][player_id]["y"]+50)//50][new_x//50]
+
+            print(f"the tile at {new_x//50},{player_y//50} is {tile_1}")
+            #print(f"the tile at {new_x//50},{(player_y+50)//50} is {tile_2}")
+
+            if tile_1 != 1:# and tile_2 != 1:
+                game_data["players"][player_id]["x"]+=1
+                messages.send_message(f"move {player_id} 1",client)
+        elif keys[pygame.K_LEFT]:
+            new_x = (game_data["players"][player_id]["x"]-1)
+            player_y = game_data['players'][player_id]["y"]
+
+            tile_1 = game_data['level']['grid'][game_data['players'][player_id]["y"]//50][new_x//50]
+            #tile_2 = game_data['level']["grid"][(game_data["players"][player_id]["y"]+50)//50][new_x//50]
+
+            print(f"the tile at {new_x//50},{player_y//50} is {tile_1}")
+            #print(f"the tile at {new_x//50},{(player_y+50)//50} is {tile_2}")
+
+            if tile_1 != 1:# and tile_2 != 1:
+                game_data["players"][player_id]["x"]-=1
+                messages.send_message(f"move {player_id} -1",client)
             messages.send_message(f"move {player_id} 1",client)
             #send_message("quit",client)
             game_data["players"][player_id]["x"]+=1
-        if keys[pygame.K_LEFT]:
-            messages.send_message(f"move {player_id} -1",client)
-            #send_message("quit",client)
-            game_data["players"][player_id]["x"]-=1
         animation_counter += 1
         if animation_counter == 10:
             if player1_animation == "idle":
@@ -112,7 +134,7 @@ while game_state != 0:
                     player2_animation_direction = 1
                 player2_animation_state += player2_animation_direction
             animation_counter = 0
-
+            
         display_tiles()
         display_players()
         pygame.display.update()
