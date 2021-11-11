@@ -35,7 +35,7 @@ player_id = int(client.recv(28).decode())
 
 tiles = [pygame.transform.scale(pygame.image.load("assets/tiles/sky.png"),(50,50)),
         pygame.transform.scale(pygame.image.load("assets/tiles/ground.png"),(50,50)),
-        pygame.transform.scale(pygame.image.load("assets/tiles/ground.png"),(50,50))]
+        pygame.transform.scale(pygame.image.load("assets/tiles/gate.png"),(50,50))]
 
 players = [pygame.transform.scale(pygame.image.load(game_data["players"][0]["image"]),(450,100)),
             pygame.transform.scale(pygame.image.load(game_data["players"][1]["image"]),(450,100))]
