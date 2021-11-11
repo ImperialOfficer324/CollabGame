@@ -19,8 +19,7 @@ client.connect(server_address)
 
 #game variables
 game_state = 1
-#player_id = int(client.recv(24).decode())
-player_id = 0
+#player_id = 0
 gamedata_string = str(client.recv(max_size), "utf-8")
 game_data = json.loads(gamedata_string)
 print(game_data)
@@ -31,6 +30,8 @@ window = pygame.display.set_mode((WIDTH,HEIGHT))
 clock = pygame.time.Clock() 
 #NOTE: change title later
 pygame.display.set_caption("Collaboration Game")
+
+player_id = int(client.recv(28).decode())
 
 tiles = [pygame.transform.scale(pygame.image.load("assets/tiles/sky.png"),(50,50)),
         pygame.transform.scale(pygame.image.load("assets/tiles/ground.png"),(50,50))]
@@ -45,16 +46,16 @@ def display_tiles():
     return 1
 
 def display_players():
+    p1 = pygame.Surface((80, 80))
+    p1.blit(players[1], (0, 0), (0, 0, 50, 50))
+    p0 = pygame.Surface((80, 80))
+    p0.blit(players[0], (0, 0), (0, 0, 50, 50))
     if player_id == 0:
-        p1 = pygame.Surface((80, 80))
-        p1.blit(players[1], (0, 0), (0, 0, 50, 50))
-        p0 = pygame.Surface((80, 80))
-        p0.blit(players[0], (0, 0), (0, 0, 50, 50))
         window.blit(p1,(int(game_data["players"][1]["x"]),int(game_data["players"][1]["y"])))
         window.blit(p0,(int(game_data["players"][0]["x"]),int(game_data["players"][0]["y"])))
     else:
-        window.blit(players[0],game_data["players"][0]["x"],game_data["players"][0]["y"])
-        window.blit(players[1],game_data["players"][1]["x"],game_data["players"][1]["y"])
+        window.blit(p0,(int(game_data["players"][0]["x"]),int(game_data["players"][0]["y"])))
+        window.blit(p1,(int(game_data["players"][1]["x"]),int(game_data["players"][1]["y"])))
 
 def listen_to_server(client):
     global game_data
