@@ -95,9 +95,11 @@ while game_state != 0:
             player_y = game_data['players'][player_id]["y"]
 
             tile_1 = game_data['level']['grid'][game_data['players'][player_id]["y"]//50][new_x//50]
-            #tile_2 = game_data['level']["grid"][(game_data["players"][player_id]["y"]+50)//50][new_x//50]
+            tile_2 = 0
+            if player_y % 50 != 0:
+                tile_2 = game_data['level']["grid"][(game_data["players"][player_id]["y"]+50)//50][new_x//50]
 
-            if tile_1 != 1:# and tile_2 != 1:
+            if tile_1 != 1 and tile_2 != 1:
                 game_data["players"][player_id]["x"]+=1
                 messages.send_message(f"move {player_id} 1",client)
         elif keys[pygame.K_LEFT]:
@@ -105,12 +107,14 @@ while game_state != 0:
             player_y = game_data['players'][player_id]["y"]
 
             tile_1 = game_data['level']['grid'][game_data['players'][player_id]["y"]//50][new_x//50]
-            #tile_2 = game_data['level']["grid"][(game_data["players"][player_id]["y"]+50)//50][new_x//50]
+            tile_2 = 0
+            if player_y % 50 != 0:
+                tile_2 = game_data['level']["grid"][(game_data["players"][player_id]["y"]+50)//50][new_x//50]
 
-            if tile_1 != 1:# and tile_2 != 1:
+            if tile_1 != 1 and tile_2 != 1:
                 game_data["players"][player_id]["x"]-=1
                 messages.send_message(f"move {player_id} -1",client)
-                
+
         animation_counter += 1
         if animation_counter == 10:
             if player1_animation == "idle":
