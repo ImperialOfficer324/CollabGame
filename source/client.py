@@ -54,6 +54,9 @@ player1_animation_direction = 1
 player2_animation_direction = 1
 animation_counter = 0
 
+player_y_vel = 0
+gravity_counter = 0
+
 def display_players():
     if player1_animation == "idle":
         offset = 0
@@ -72,10 +75,14 @@ def display_players():
 
 def listen_to_server(client):
     global game_data
+    global game_state
     while game_state:
         msg = client.recv(max_size)
+        if(str(msg,"utf-8") == "quit"):
+            print("quit")
+            game_state = 0
         game_data = messages.parse_message(msg,game_data)
-        print(f'recieved message {str(msg,"utf-8")}')
+        # print(f'recieved message {str(msg,"utf-8")}')
 
 server_listener = threading.Thread(target=lambda:listen_to_server(client))
 server_listener.start()
@@ -86,8 +93,8 @@ while game_state != 0:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 messages.send_message("quit",client)
-                client.close()
                 pygame.quit()
+                client.close()
                 quit()
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RIGHT]:
@@ -114,6 +121,27 @@ while game_state != 0:
             if tile_1 != 1 and tile_2 != 1:
                 game_data["players"][player_id]["x"]-=1
                 messages.send_message(f"move {player_id} -1",client)
+        
+        # apply gravity to player
+        if player_y_vel!=0:
+            new_y = (game_data["players"][player_id]["y"]+player_y_vel)+50
+            player_x = game_data['players'][player_id]["x"]
+
+            tile_1 = game_data['level']['grid'][new_y//50][player_x//50]
+            tile_2 = 0
+            #if player_x % 50 != 0:
+                #tile_2 = game_data['level']['grid'][new_y//50][(player_x+50)//50]
+
+            if tile_1 != 1 and tile_2 != 1:
+                game_data["players"][player_id]["y"]+=player_y_vel
+                messages.send_message(f"move y {player_id} {player_y_vel}",client)
+            else:
+                player_y_vel = 0
+        gravity_counter+=1
+        if gravity_counter>=4:
+            gravity_counter = 0
+            player_y_vel+=2
+            # player_y_vel = 1
 
         animation_counter += 1
         if animation_counter == 10:
@@ -137,3 +165,5 @@ while game_state != 0:
 
 #close client
 client.close()
+pygame.quit()
+quit()

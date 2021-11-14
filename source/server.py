@@ -42,10 +42,12 @@ def listen_to_client(client,other_client):
         msg_bytes = client.recv(max_size)
         msg = msg_bytes.decode('utf-8')
         if msg == "quit":
-            game_state = 0
+            other_client.sendall(msg_bytes)
             client1.close()
             client2.close()
             server.close()
+            game_state = 0
+            quit()
         gamedata = messages.parse_message(msg_bytes,gamedata)
         other_client.sendall(msg_bytes)
 
