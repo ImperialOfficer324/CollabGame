@@ -98,6 +98,14 @@ while game_state != 0:
                 quit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE or event.key == pygame.K_UP:
+                    if player_id==0:
+                        player1_animation = "jump"
+                        player1_animation_state = 3
+                        player1_animation_direction = 1
+                    else:
+                        player2_animation = "jump"
+                        player2_animation_state = 3
+                        player2_animation_direction = 1
                     player_y_vel -= 20
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RIGHT]:
@@ -141,9 +149,9 @@ while game_state != 0:
             else:
                 player_y_vel = 0
         gravity_counter+=1
-        if gravity_counter>=4:
+        if gravity_counter>=2:
             gravity_counter = 0
-            player_y_vel+=2
+            player_y_vel+=1
             # player_y_vel = 1
 
         animation_counter += 1
@@ -154,11 +162,25 @@ while game_state != 0:
                 if player1_animation_state == 0:
                     player1_animation_direction = 1
                 player1_animation_state += player1_animation_direction
+            elif player1_animation == "jump":
+                if player1_animation_state == 5:
+                    player1_animation_direction = -1
+                if player1_animation_state < 3:
+                    player1_animation = "idle"
+                player1_animation_state += player1_animation_direction
+
+
             if player2_animation == "idle":
                 if player2_animation_state == 2:
                     player2_animation_direction = -1
                 if player2_animation_state == 0:
                     player2_animation_direction = 1
+                player2_animation_state += player2_animation_direction
+            elif player2_animation == "jump":
+                if player2_animation_state == 5:
+                    player2_animation_direction = -1
+                if player2_animation_state < 3:
+                    player2_animation = "idle"
                 player2_animation_state += player2_animation_direction
             animation_counter = 0
 
