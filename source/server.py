@@ -40,27 +40,27 @@ def listen_to_client(client,other_client,player_id):
     global game_state
     gravity_counter = 0
     while game_state:
-        # apply gravity to player
-        player_y_vel = gamedata["players"][player_id]["y_vel"]
-        if player_y_vel!=0:
-            new_y = (gamedata["players"][player_id]["y"]+player_y_vel)+50
-            player_x = gamedata['players'][player_id]["x"]
+        # # apply gravity to player
+        # player_y_vel = gamedata["players"][player_id]["y_vel"]
+        # if player_y_vel!=0:
+        #     new_y = (gamedata["players"][player_id]["y"]+player_y_vel)+50
+        #     player_x = gamedata['players'][player_id]["x"]
 
-            tile_1 = gamedata['level']['grid'][new_y//50][player_x//50]
-            tile_2 = 0
+        #     tile_1 = gamedata['level']['grid'][new_y//50][player_x//50]
+        #     tile_2 = 0
 
-            if tile_1 != 1 and tile_2 != 1:
-                gamedata["players"][player_id]["y"]+=player_y_vel
-                messages.send_message(f"move y {player_id} {player_y_vel} ",client)
-                messages.send_message(f"move y {player_id} {player_y_vel} ",other_client)
-            else:
-                player_y_vel = 0
-        gravity_counter+=1
+        #     if tile_1 != 1 and tile_2 != 1:
+        #         gamedata["players"][player_id]["y"]+=player_y_vel
+        #         messages.send_message(f"move y {player_id} {player_y_vel} ",client)
+        #         messages.send_message(f"move y {player_id} {player_y_vel} ",other_client)
+        #     else:
+        #         player_y_vel = 0
+        # gravity_counter+=1
 
-        if gravity_counter>=4:
-            gravity_counter = 0
-            player_y_vel+=2
-            # player_y_vel = 1
+        # if gravity_counter>=4:
+        #     gravity_counter = 0
+        #     player_y_vel+=2
+        #     # player_y_vel = 1
 
         msg_bytes = client.recv(max_size)
         msg = msg_bytes.decode('utf-8')

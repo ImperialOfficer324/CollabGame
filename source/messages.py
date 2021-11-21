@@ -3,8 +3,13 @@ def send_message(event,client):
     client.sendall(bytes(event,"utf-8"))
 
 def parse_message(message,game_data):
-    print(f'parsing message {message}')
     message = message.decode("utf-8")
+    for i in message.split("|"):
+        game_data = _parse_message(i,game_data)
+    return game_data
+
+def _parse_message(message,game_data):
+    print(f'parsing message {message}')
     if "move " in message:
         message = message.replace("move ","")
         if "y" in message:

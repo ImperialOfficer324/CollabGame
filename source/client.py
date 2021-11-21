@@ -134,7 +134,7 @@ while game_state != 0:
 
             if tile_1 != 1 and tile_2 != 1:
                 game_data["players"][player_id]["y"]+=player_y_vel
-                messages.send_message(f"move y {player_id} {player_y_vel}",client)
+                messages.send_message(f"move y {player_id} {player_y_vel}|",client)
             else:
                 player_y_vel = 0
         gravity_counter+=1
