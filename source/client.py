@@ -96,6 +96,8 @@ while game_state != 0:
                 pygame.quit()
                 client.close()
                 quit()
+            elif event.type == pygame.KEYDOWN:
+                player_y_vel -= 10
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RIGHT]:
             new_x = (game_data["players"][player_id]["x"]+1)+50
@@ -121,7 +123,7 @@ while game_state != 0:
             if (tile_1 != 1 and tile_2 != 1) and new_x>0:
                 game_data["players"][player_id]["x"]-=1
                 messages.send_message(f"move {player_id} -1",client)
-        
+
         # apply gravity to player
         if player_y_vel!=0:
             new_y = (game_data["players"][player_id]["y"]+player_y_vel)+50
@@ -158,7 +160,7 @@ while game_state != 0:
                     player2_animation_direction = 1
                 player2_animation_state += player2_animation_direction
             animation_counter = 0
-            
+
         display_tiles()
         display_players()
         pygame.display.update()
