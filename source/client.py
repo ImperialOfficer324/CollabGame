@@ -118,7 +118,7 @@ while game_state != 0:
             if player_y % 50 != 0:
                 tile_2 = game_data['level']["grid"][(game_data["players"][player_id]["y"]+50)//50][new_x//50]
 
-            if tile_1 != 1 and tile_2 != 1:
+            if (tile_1 != 1 and tile_2 != 1) and new_x>0:
                 game_data["players"][player_id]["x"]-=1
                 messages.send_message(f"move {player_id} -1",client)
         
