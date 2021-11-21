@@ -17,7 +17,7 @@ client2,addr2 = server.accept()
 
 file_contents = ""
 
-with open('levels/t2.json', 'r') as level_file:
+with open('levels/test_level.json', 'r') as level_file:
     for line in level_file:
         file_contents+=str(line)
 level=json.loads(file_contents)
