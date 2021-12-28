@@ -10,6 +10,8 @@ import threading
 WIDTH = 1000
 HEIGHT = 700
 
+tile_size = 76
+
 #setup connection with server
 server_address=("localhost", 6789)
 max_size=10000
@@ -24,6 +26,9 @@ gamedata_string = str(client.recv(max_size), "utf-8")
 game_data = json.loads(gamedata_string)
 print(game_data)
 
+x_offset = 0
+y_offset = 0
+
 #setup window
 pygame.init()
 window = pygame.display.set_mode((WIDTH,HEIGHT))
@@ -33,9 +38,9 @@ pygame.display.set_caption("Collaboration Game")
 
 player_id = int(client.recv(28).decode())
 
-tiles = [pygame.transform.scale(pygame.image.load("assets/tiles/sky.png"),(50,50)),
-        pygame.transform.scale(pygame.image.load("assets/tiles/ground.png"),(50,50)),
-        pygame.transform.scale(pygame.image.load("assets/tiles/gate.png"),(50,50))]
+tiles = [pygame.transform.scale(pygame.image.load("assets/tiles/sky.png"),(tile_size,tile_size)),
+        pygame.transform.scale(pygame.image.load("assets/tiles/ground.png"),(tile_size,tile_size)),
+        pygame.transform.scale(pygame.image.load("assets/tiles/gate.png"),(tile_size,tile_size))]
 
 players = [pygame.transform.scale(pygame.image.load(game_data["players"][0]["image"]),(450,100)),
             pygame.transform.scale(pygame.image.load(game_data["players"][1]["image"]),(450,100))]
@@ -43,7 +48,7 @@ players = [pygame.transform.scale(pygame.image.load(game_data["players"][0]["ima
 def display_tiles():
     for row_count,row in enumerate(game_data["level"]["grid"]):
         for col_count,column in enumerate(row):
-            window.blit(tiles[column],(col_count * 50,row_count * 50))
+            window.blit(tiles[column],((col_count * tile_size)-x_offset,(row_count * tile_size)-y_offset))
     return 1
 
 player1_animation = "idle"
@@ -68,11 +73,11 @@ def display_players():
     p0.set_colorkey((0,0,0))
     p0.blit(players[0], (0, 0), ((player1_animation_state + offset) * 50, 0, 50, 50))
     if player_id == 0:
-        window.blit(p1,(int(game_data["players"][1]["x"]),int(game_data["players"][1]["y"])))
-        window.blit(p0,(int(game_data["players"][0]["x"]),int(game_data["players"][0]["y"])))
+        window.blit(p1,(int(game_data["players"][1]["x"])-x_offset,int(game_data["players"][1]["y"])-y_offset))
+        window.blit(p0,(int(game_data["players"][0]["x"])-x_offset,int(game_data["players"][0]["y"])-y_offset))
     else:
-        window.blit(p0,(int(game_data["players"][0]["x"]),int(game_data["players"][0]["y"])))
-        window.blit(p1,(int(game_data["players"][1]["x"]),int(game_data["players"][1]["y"])))
+        window.blit(p0,(int(game_data["players"][0]["x"])-x_offset,int(game_data["players"][0]["y"])-y_offset))
+        window.blit(p1,(int(game_data["players"][1]["x"])-x_offset,int(game_data["players"][1]["y"])-y_offset))
 
 def listen_to_server(client):
     global game_data
@@ -91,6 +96,8 @@ server_listener.start()
 while game_state != 0:
     clock.tick(60)
     if game_state == 1: # main game loop
+        x_offset = int(game_data["players"][player_id]["x"])//2
+        y_offset = int(game_data["players"][player_id]["y"])//2
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 messages.send_message("quit",client)
@@ -113,10 +120,10 @@ while game_state != 0:
             new_x = (game_data["players"][player_id]["x"]+1)+50
             player_y = game_data['players'][player_id]["y"]
 
-            tile_1 = game_data['level']['grid'][game_data['players'][player_id]["y"]//50][new_x//50]
+            tile_1 = game_data['level']['grid'][game_data['players'][player_id]["y"]//tile_size][new_x//tile_size]
             tile_2 = 0
-            if player_y % 50 != 0:
-                tile_2 = game_data['level']["grid"][(game_data["players"][player_id]["y"]+50)//50][new_x//50]
+            if player_y % tile_size != 0:
+                tile_2 = game_data['level']["grid"][(game_data["players"][player_id]["y"]+50)//tile_size][new_x//tile_size]
 
             if tile_1 != 1 and tile_2 != 1:
                 game_data["players"][player_id]["x"]+=1
@@ -125,10 +132,10 @@ while game_state != 0:
             new_x = (game_data["players"][player_id]["x"]-1)
             player_y = game_data['players'][player_id]["y"]
 
-            tile_1 = game_data['level']['grid'][game_data['players'][player_id]["y"]//50][new_x//50]
+            tile_1 = game_data['level']['grid'][game_data['players'][player_id]["y"]//tile_size][new_x//tile_size]
             tile_2 = 0
-            if player_y % 50 != 0:
-                tile_2 = game_data['level']["grid"][(game_data["players"][player_id]["y"]+50)//50][new_x//50]
+            if player_y % tile_size != 0:
+                tile_2 = game_data['level']["grid"][(game_data["players"][player_id]["y"]+50)//tile_size][new_x//tile_size]
 
             if (tile_1 != 1 and tile_2 != 1) and new_x>0:
                 game_data["players"][player_id]["x"]-=1
@@ -139,10 +146,10 @@ while game_state != 0:
             new_y = (game_data["players"][player_id]["y"]+player_y_vel)+50
             player_x = game_data['players'][player_id]["x"]
 
-            tile_1 = game_data['level']['grid'][new_y//50][player_x//50]
+            tile_1 = game_data['level']['grid'][new_y//tile_size][player_x//tile_size]
             tile_2 = 0
-            if player_x % 50 != 0:
-                tile_2 = game_data['level']['grid'][new_y//50][(player_x+50)//50]
+            if player_x % tile_size != 0:
+                tile_2 = game_data['level']['grid'][new_y//tile_size][(player_x+50)//tile_size]
 
             if tile_1 != 1 and tile_2 != 1:
                 game_data["players"][player_id]["y"]+=player_y_vel
