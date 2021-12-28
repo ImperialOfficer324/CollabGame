@@ -58,6 +58,7 @@ player_y_vel = 0
 gravity_counter = 0
 
 def display_players():
+    offset = 0
     if player1_animation == "idle":
         offset = 0
     p1 = pygame.Surface((50, 50))
@@ -106,7 +107,7 @@ while game_state != 0:
                         player2_animation = "jump"
                         player2_animation_state = 3
                         player2_animation_direction = 1
-                    player_y_vel -= 20
+                    player_y_vel -= 10
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RIGHT]:
             new_x = (game_data["players"][player_id]["x"]+1)+50
