@@ -2,6 +2,7 @@ import socket
 import json
 import threading
 import messages
+import time
 
 address = ('localhost',6789)
 max_size = 1000
@@ -79,8 +80,9 @@ client2.sendall(bytes(gamedata_string,"utf-8"))
 
 client1_thread = threading.Thread(target = lambda:listen_to_client(client1,client2,0))
 client2_thread = threading.Thread(target = lambda:listen_to_client(client2,client1,1))
-client1_thread.start()
-client2_thread.start()
 
 client1.sendall(zero.encode())
 client2.sendall(one.encode())
+
+client1_thread.start()
+client2_thread.start()
