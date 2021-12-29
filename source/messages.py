@@ -4,8 +4,11 @@ def send_message(event,client):
 
 def parse_message(message,game_data):
     message = message.decode("utf-8")
+    anim_data = [0,0]
     for i in message.split("|"):
-        game_data, anim_data = _parse_message(i,game_data)
+        game_data, temp = _parse_message(i,game_data)
+        if temp[0]!=0:
+            anim_data = temp
     return game_data, anim_data
 
 def _parse_message(message,game_data):
