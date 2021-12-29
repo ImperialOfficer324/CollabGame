@@ -60,20 +60,18 @@ player2_animation_state = 0
 player1_animation_direction = 1
 player2_animation_direction = 1
 animation_counter = 0
+on_ground = 0
 
 player_y_vel = 0
 gravity_counter = 0
 
 def display_players():
-    offset = 0
-    if player1_animation == "idle":
-        offset = 0
     p1 = pygame.Surface((50, 50))
     p1.set_colorkey((0,0,0))
-    p1.blit(players[1], (0, 0), ((player2_animation_state + offset) * 50, 0, 50, 50))
+    p1.blit(players[1], (0, 0), ((player2_animation_state) * 50, 0, 50, 50))
     p0 = pygame.Surface((50, 50))
     p0.set_colorkey((0,0,0))
-    p0.blit(players[0], (0, 0), ((player1_animation_state + offset) * 50, 0, 50, 50))
+    p0.blit(players[0], (0, 0), ((player1_animation_state) * 50, 0, 50, 50))
     if player_id == 0:
         window.blit(p1,(int(game_data["players"][1]["x"])-x_offset,int(game_data["players"][1]["y"])-y_offset))
         window.blit(p0,(int(game_data["players"][0]["x"])-x_offset,int(game_data["players"][0]["y"])-y_offset))
@@ -157,8 +155,19 @@ while game_state != 0:
             if tile_1 != 1 and tile_2 != 1:
                 game_data["players"][player_id]["y"]+=player_y_vel
                 messages.send_message(f"move y {player_id} {player_y_vel}|",client)
+                on_ground = 0
             else:
                 player_y_vel = 0
+                if on_ground == 0:
+                    if player_id == 0:
+                        player1_animation = "land"
+                        player1_animation_state = 6
+                        player1_animation_direction = 1
+                    else:
+                        player2_animation = "land"
+                        player2_animation_state = 6
+                        player2_animation_direction = 1
+                on_ground = 1
 
         if player_y_vel<0:
             new_y = (game_data["players"][player_id]["y"]+player_y_vel)
@@ -184,31 +193,47 @@ while game_state != 0:
         animation_counter += 1
         if animation_counter == 10:
             if player1_animation == "idle":
+                player1_animation_state += player1_animation_direction
                 if player1_animation_state == 2:
                     player1_animation_direction = -1
                 if player1_animation_state == 0:
                     player1_animation_direction = 1
-                player1_animation_state += player1_animation_direction
             elif player1_animation == "jump":
+                player1_animation_state += player1_animation_direction
                 if player1_animation_state == 5:
                     player1_animation_direction = -1
                 if player1_animation_state < 3:
                     player1_animation = "idle"
+            elif player1_animation == "land":
                 player1_animation_state += player1_animation_direction
+                if player1_animation_state == 8:
+                    player1_animation_direction = -1
+                if player1_animation_state < 6:
+                    player1_animation = "idle"
+                    player1_animation_state = 0
+                    player1_animation_direction = 1
 
 
             if player2_animation == "idle":
+                player2_animation_state += player2_animation_direction
                 if player2_animation_state == 2:
                     player2_animation_direction = -1
                 if player2_animation_state == 0:
                     player2_animation_direction = 1
-                player2_animation_state += player2_animation_direction
             elif player2_animation == "jump":
+                player2_animation_state += player2_animation_direction
                 if player2_animation_state == 5:
                     player2_animation_direction = -1
                 if player2_animation_state < 3:
                     player2_animation = "idle"
+            elif player2_animation == "land":
                 player2_animation_state += player2_animation_direction
+                if player2_animation_state == 8:
+                    player2_animation_direction = -1
+                if player2_animation_state < 6:
+                    player2_animation = "idle"
+                    player2_animation_state = 0
+                    player2_animation_direction = 1
             animation_counter = 0
 
         display_tiles()
