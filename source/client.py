@@ -56,6 +56,7 @@ def display_tiles():
             window.blit(tiles[column],((col_count * tile_size)-x_offset,(row_count * tile_size)-y_offset))
     return 1
 
+anim_speed = 7
 player1_animation = "idle"
 player2_animation = "idle"
 player1_animation_state = 0
@@ -64,6 +65,9 @@ player1_animation_direction = 1
 player2_animation_direction = 1
 animation_counter = 0
 on_ground = 0
+# set this to the number of times the players are able to jump without touching the ground
+num_jumps = 3
+jumps = num_jumps
 
 player_y_vel = 0
 gravity_counter = 0
@@ -107,6 +111,8 @@ def listen_to_server(client):
                 player2_animation_state = game_data["players"][1]["anim"][1]
                 player2_animation_direction = game_data["players"][1]["anim"][2]
 
+                # print(f'{player2_animation} {player2_animation_state} {player2_animation_direction}')
+
         # print(f'recieved message {str(msg,"utf-8")}')
 
 server_listener = threading.Thread(target=lambda:listen_to_server(client))
@@ -125,17 +131,19 @@ while game_state != 0:
                 quit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE or event.key == pygame.K_UP:
-                    if player_id==0:
-                        player1_animation = "jump"
-                        player1_animation_state = 3
-                        player1_animation_direction = 1
-                        messages.send_message("anim 0 jump 3 1",client)
-                    else:
-                        player2_animation = "jump"
-                        player2_animation_state = 3
-                        player2_animation_direction = 1
-                        messages.send_message("anim 1 jump 3 1",client)
-                    player_y_vel -= 10
+                    if jumps>0:
+                        jumps-=1
+                        if player_id==0:
+                            player1_animation = "jump"
+                            player1_animation_state = 3
+                            player1_animation_direction = 1
+                            messages.send_message("anim 0 jump 3 1|",client)
+                        else:
+                            player2_animation = "jump"
+                            player2_animation_state = 3
+                            player2_animation_direction = 1
+                            messages.send_message("anim 1 jump 3 1|",client)
+                        player_y_vel -= 10
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RIGHT]:
             new_x = (game_data["players"][player_id]["x"]+player_move_speed)+50
@@ -184,13 +192,14 @@ while game_state != 0:
                         player1_animation = "land"
                         player1_animation_state = 6
                         player1_animation_direction = 1
-                        messages.send_message("anim 0 land 6 1",client)
+                        messages.send_message("anim 0 land 6 1|",client)
                     else:
                         player2_animation = "land"
                         player2_animation_state = 6
                         player2_animation_direction = 1
-                        messages.send_message("anim 1 jump 6 1",client)
+                        messages.send_message("anim 1 land 6 1|",client)
                 on_ground = 1
+                jumps = num_jumps
 
         if player_y_vel<0:
             new_y = (game_data["players"][player_id]["y"]+player_y_vel)
@@ -214,7 +223,7 @@ while game_state != 0:
             # player_y_vel = 1
 
         animation_counter += 1
-        if animation_counter == 10:
+        if animation_counter == anim_speed:
             if player1_animation == "idle":
                 player1_animation_state += player1_animation_direction
                 if player1_animation_state == 2:
@@ -229,7 +238,7 @@ while game_state != 0:
                     player1_animation = "idle"
                     player1_animation_state = 0
                     player1_animation_direction = 1
-                    messages.send_message("anim 0 idle 0 1",client)
+                    #messages.send_message("anim 0 idle 0 1|",client)
             elif player1_animation == "land":
                 player1_animation_state += player1_animation_direction
                 if player1_animation_state == 8:
@@ -238,7 +247,7 @@ while game_state != 0:
                     player1_animation = "idle"
                     player1_animation_state = 0
                     player1_animation_direction = 1
-                    messages.send_message("anim 0 idle 0 1",client)
+                    #messages.send_message("anim 0 idle 0 1|",client)
 
 
             if player2_animation == "idle":
@@ -255,7 +264,7 @@ while game_state != 0:
                     player2_animation = "idle"
                     player2_animation_state = 0
                     player2_animation_direction = 1
-                    messages.send_message("anim 1 idle 0 1",client)
+                    #messages.send_message("anim 1 idle 0 1|",client)
             elif player2_animation == "land":
                 player2_animation_state += player2_animation_direction
                 if player2_animation_state == 8:
@@ -264,7 +273,7 @@ while game_state != 0:
                     player2_animation = "idle"
                     player2_animation_state = 0
                     player2_animation_direction = 1
-                    messages.send_message("anim 1 idle 0 1",client)
+                    #messages.send_message("anim 1 idle 0 1|",client)
             animation_counter = 0
 
         display_tiles()
