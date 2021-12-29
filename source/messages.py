@@ -5,10 +5,12 @@ def send_message(event,client):
 def parse_message(message,game_data):
     message = message.decode("utf-8")
     for i in message.split("|"):
-        game_data = _parse_message(i,game_data)
-    return game_data
+        game_data, anim_data = _parse_message(i,game_data)
+    return game_data, anim_data
 
 def _parse_message(message,game_data):
+    anim_changed = 0
+    player_id = 0
     # print(f'parsing message {message}')
     if "move " in message:
         message = message.replace("move ","")
@@ -23,4 +25,12 @@ def _parse_message(message,game_data):
             player_id = int(message.split(" ")[0])
             val = int(message.split(" ")[1])
             game_data["players"][player_id]["x"]+=val
-    return game_data
+    elif "anim " in message:
+        message = message.replace("anim ","")
+        player_id = int(message.split(" ")[0])
+        anim = str(message.split(" ")[1])
+        state = int(message.split(" ")[2])
+        direction = int(message.split(" ")[3])
+        game_data["players"][player_id]["anim"] = [anim, state, direction]
+        anim_changed = 1
+    return game_data, [anim_changed,player_id]
