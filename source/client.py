@@ -145,7 +145,7 @@ while game_state != 0:
                 messages.send_message(f"move {player_id} -{player_move_speed}|",client)
 
         # apply gravity to player
-        if player_y_vel!=0:
+        if player_y_vel>0:
             new_y = (game_data["players"][player_id]["y"]+player_y_vel)+50
             player_x = game_data['players'][player_id]["x"]
 
@@ -159,6 +159,22 @@ while game_state != 0:
                 messages.send_message(f"move y {player_id} {player_y_vel}|",client)
             else:
                 player_y_vel = 0
+
+        if player_y_vel<0:
+            new_y = (game_data["players"][player_id]["y"]+player_y_vel)
+            player_x = game_data['players'][player_id]["x"]
+
+            tile_1 = game_data['level']['grid'][new_y//tile_size][player_x//tile_size]
+            tile_2 = 0
+            if player_x % tile_size != 0:
+                tile_2 = game_data['level']['grid'][new_y//tile_size][(player_x+50)//tile_size]
+
+            if tile_1 != 1 and tile_2 != 1:
+                game_data["players"][player_id]["y"]+=player_y_vel
+                messages.send_message(f"move y {player_id} {player_y_vel}|",client)
+            else:
+                player_y_vel = 0
+
         gravity_counter+=1
         if gravity_counter>=2:
             gravity_counter = 0
