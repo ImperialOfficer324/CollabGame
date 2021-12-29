@@ -174,32 +174,39 @@ while game_state != 0:
         # apply gravity to player
         if player_y_vel>0:
             new_y = (game_data["players"][player_id]["y"]+player_y_vel)+50
-            player_x = game_data['players'][player_id]["x"]
-
-            tile_1 = game_data['level']['grid'][new_y//tile_size][player_x//tile_size]
-            tile_2 = 0
-            if player_x % tile_size != 0:
-                tile_2 = game_data['level']['grid'][new_y//tile_size][(player_x+50)//tile_size]
-
-            if tile_1 != 1 and tile_2 != 1:
-                game_data["players"][player_id]["y"]+=player_y_vel
-                messages.send_message(f"move y {player_id} {player_y_vel}|",client)
-                on_ground = 0
-            else:
+            if new_y>len(game_data["level"]["grid"])*tile_size:
                 player_y_vel = 0
-                if on_ground == 0:
-                    if player_id == 0:
-                        player1_animation = "land"
-                        player1_animation_state = 6
-                        player1_animation_direction = 1
-                        messages.send_message("anim 0 land 6 1|",client)
-                    else:
-                        player2_animation = "land"
-                        player2_animation_state = 6
-                        player2_animation_direction = 1
-                        messages.send_message("anim 1 land 6 1|",client)
-                on_ground = 1
-                jumps = num_jumps
+                messages.send_message(f'move y {player_id} {game_data["level"]["player_y"]-game_data["players"][player_id]["y"]}|',client)
+                messages.send_message(f'move {player_id} {game_data["level"]["player_x"]-game_data["players"][player_id]["x"]}|',client)
+                game_data["players"][player_id]["y"] = game_data["level"]["player_y"]
+                game_data["players"][player_id]["x"] = game_data["level"]["player_x"]
+            else:    
+                player_x = game_data['players'][player_id]["x"]
+
+                tile_1 = game_data['level']['grid'][new_y//tile_size][player_x//tile_size]
+                tile_2 = 0
+                if player_x % tile_size != 0:
+                    tile_2 = game_data['level']['grid'][new_y//tile_size][(player_x+50)//tile_size]
+
+                if tile_1 != 1 and tile_2 != 1:                
+                    game_data["players"][player_id]["y"]+=player_y_vel
+                    messages.send_message(f"move y {player_id} {player_y_vel}|",client)
+                    on_ground = 0
+                else:
+                    player_y_vel = 0
+                    if on_ground == 0:
+                        if player_id == 0:
+                            player1_animation = "land"
+                            player1_animation_state = 6
+                            player1_animation_direction = 1
+                            messages.send_message("anim 0 land 6 1|",client)
+                        else:
+                            player2_animation = "land"
+                            player2_animation_state = 6
+                            player2_animation_direction = 1
+                            messages.send_message("anim 1 land 6 1|",client)
+                    on_ground = 1
+                    jumps = num_jumps
 
         if player_y_vel<0:
             new_y = (game_data["players"][player_id]["y"]+player_y_vel)
