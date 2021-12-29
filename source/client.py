@@ -46,6 +46,7 @@ players = [pygame.transform.scale(pygame.image.load(game_data["players"][0]["ima
             pygame.transform.scale(pygame.image.load(game_data["players"][1]["image"]),(450,100))]
 
 def display_tiles():
+    window.fill((0,0,0));
     for row_count,row in enumerate(game_data["level"]["grid"]):
         for col_count,column in enumerate(row):
             window.blit(tiles[column],((col_count * tile_size)-x_offset,(row_count * tile_size)-y_offset))
@@ -120,14 +121,15 @@ while game_state != 0:
             new_x = (game_data["players"][player_id]["x"]+1)+50
             player_y = game_data['players'][player_id]["y"]
 
-            tile_1 = game_data['level']['grid'][game_data['players'][player_id]["y"]//tile_size][new_x//tile_size]
-            tile_2 = 0
-            if player_y % tile_size != 0:
-                tile_2 = game_data['level']["grid"][(game_data["players"][player_id]["y"]+50)//tile_size][new_x//tile_size]
+            if new_x<(len(game_data["level"]['grid'][0])*tile_size):
+                tile_1 = game_data['level']['grid'][game_data['players'][player_id]["y"]//tile_size][new_x//tile_size]
+                tile_2 = 0
+                if player_y % tile_size != 0:
+                    tile_2 = game_data['level']["grid"][(game_data["players"][player_id]["y"]+50)//tile_size][new_x//tile_size]
 
-            if tile_1 != 1 and tile_2 != 1:
-                game_data["players"][player_id]["x"]+=1
-                messages.send_message(f"move {player_id} 1|",client)
+                if tile_1 != 1 and tile_2 != 1:
+                    game_data["players"][player_id]["x"]+=1
+                    messages.send_message(f"move {player_id} 1|",client)
         elif keys[pygame.K_LEFT]:
             new_x = (game_data["players"][player_id]["x"]-1)
             player_y = game_data['players'][player_id]["y"]
