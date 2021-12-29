@@ -11,6 +11,7 @@ WIDTH = 1000
 HEIGHT = 700
 
 tile_size = 76
+player_move_speed = 3
 
 #setup connection with server
 server_address=("localhost", 6789)
@@ -118,7 +119,7 @@ while game_state != 0:
                     player_y_vel -= 10
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RIGHT]:
-            new_x = (game_data["players"][player_id]["x"]+1)+50
+            new_x = (game_data["players"][player_id]["x"]+player_move_speed)+50
             player_y = game_data['players'][player_id]["y"]
 
             if new_x<(len(game_data["level"]['grid'][0])*tile_size):
@@ -128,10 +129,10 @@ while game_state != 0:
                     tile_2 = game_data['level']["grid"][(game_data["players"][player_id]["y"]+50)//tile_size][new_x//tile_size]
 
                 if tile_1 != 1 and tile_2 != 1:
-                    game_data["players"][player_id]["x"]+=1
-                    messages.send_message(f"move {player_id} 1|",client)
+                    game_data["players"][player_id]["x"]+=player_move_speed
+                    messages.send_message(f"move {player_id} {player_move_speed}|",client)
         elif keys[pygame.K_LEFT]:
-            new_x = (game_data["players"][player_id]["x"]-1)
+            new_x = (game_data["players"][player_id]["x"]-player_move_speed)
             player_y = game_data['players'][player_id]["y"]
 
             tile_1 = game_data['level']['grid'][game_data['players'][player_id]["y"]//tile_size][new_x//tile_size]
@@ -140,8 +141,8 @@ while game_state != 0:
                 tile_2 = game_data['level']["grid"][(game_data["players"][player_id]["y"]+50)//tile_size][new_x//tile_size]
 
             if (tile_1 != 1 and tile_2 != 1) and new_x>0:
-                game_data["players"][player_id]["x"]-=1
-                messages.send_message(f"move {player_id} -1|",client)
+                game_data["players"][player_id]["x"]-=player_move_speed
+                messages.send_message(f"move {player_id} -{player_move_speed}|",client)
 
         # apply gravity to player
         if player_y_vel!=0:
