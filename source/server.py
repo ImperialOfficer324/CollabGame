@@ -26,9 +26,10 @@ print(level)
 
 gamedata = {
     "level":level,
-    "players":[{"x":level["player_x"], "y":level["player_y"], "image":"assets/players/player1.png","y_vel":0},
-    {"x":level["player_x"], "y":level["player_y"], "image":"assets/players/player2.png","y_vel":0}]
+    "players":[{"x":level["player_x"],"y":level["player_y"],"image":"assets/players/player1.png","y_vel":0,"anim":"idle"},
+    {"x":level["player_x"],"y":level["player_y"],"image":"assets/players/player2.png","y_vel":0,"anim":"idle"}]
 }
+print(type(gamedata))
 
 gamedata_string = json.dumps(gamedata)
 
@@ -72,17 +73,21 @@ def listen_to_client(client,other_client,player_id):
             server.close()
             game_state = 0
             quit()
-        gamedata = messages.parse_message(msg_bytes,gamedata)
+        gamedata,anim_data = messages.parse_message(msg_bytes,gamedata)
         other_client.sendall(msg_bytes)
 
 client1.sendall(bytes(gamedata_string,"utf-8"))
 client2.sendall(bytes(gamedata_string,"utf-8"))
+
+time.sleep(0.1);
 
 client1_thread = threading.Thread(target = lambda:listen_to_client(client1,client2,0))
 client2_thread = threading.Thread(target = lambda:listen_to_client(client2,client1,1))
 
 client1.sendall(zero.encode())
 client2.sendall(one.encode())
+
+time.sleep(0.1);
 
 client1_thread.start()
 client2_thread.start()
