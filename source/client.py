@@ -58,6 +58,8 @@ pygame.display.set_caption("Collaboration Game")
 
 player_id = int(client.recv(28).decode())
 
+time.sleep(0.5)
+
 tiles = [pygame.transform.scale(pygame.image.load("assets/tiles/sky.png"),(tile_size,tile_size)),
         pygame.transform.scale(pygame.image.load("assets/tiles/ground.png"),(tile_size,tile_size)),
         pygame.transform.scale(pygame.image.load("assets/tiles/gate.png"),(tile_size,tile_size))]
