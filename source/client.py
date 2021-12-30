@@ -56,7 +56,7 @@ clock = pygame.time.Clock()
 #NOTE: change title later
 pygame.display.set_caption("Collaboration Game")
 
-player_id = int(client.recv(28).decode())
+player_id = int(client.recv(28).decode().split("|")[0])
 
 time.sleep(0.5)
 

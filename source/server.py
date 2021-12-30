@@ -54,8 +54,8 @@ def load_server(address,max_size):
 
     gamedata_string = json.dumps(gamedata)
 
-    zero = "0"
-    one = "1"
+    zero = "0|"
+    one = "1|"
 
     def listen_to_client(client,other_client,player_id):
         global gamedata
