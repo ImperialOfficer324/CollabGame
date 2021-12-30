@@ -3,6 +3,7 @@ import json
 import threading
 import messages
 import time
+import os
 
 IP = 'localhost'
 port = 6789
@@ -20,6 +21,20 @@ temp_port = input("Port: ")
 if temp_port!="":
     port = int(temp_port)
 
+player1_skin = "player1"
+temp = input("Player 1 Appearance: ")
+if temp+'.png' in os.listdir("assets/players/"):
+    player1_skin = temp
+
+player2_skin = "player2"
+temp = input("Player 2 Appearance: ")
+if temp+'.png' in os.listdir("assets/players/"):
+    player2_skin = temp
+
+level = "level1"
+temp = input("Level: ")
+if temp+'.json' in os.listdir("levels/"):
+    level = temp
 
 address = (IP,port)
 
@@ -28,6 +43,7 @@ gamedata = {}
 
 def load_server(address,max_size):
     global gamedata
+    global level
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind(address)
 
@@ -39,7 +55,7 @@ def load_server(address,max_size):
 
     file_contents = ""
 
-    with open('levels/level1.json', 'r') as level_file:
+    with open(f'levels/{level}.json', 'r') as level_file:
         for line in level_file:
             file_contents+=str(line)
     level=json.loads(file_contents)
@@ -47,8 +63,8 @@ def load_server(address,max_size):
 
     gamedata = {
         "level":level,
-        "players":[{"x":level["player_x"],"y":level["player_y"],"image":"assets/players/player1.png","y_vel":0,"anim":"idle","facing":0},
-        {"x":level["player_x"],"y":level["player_y"],"image":"assets/players/player2.png","y_vel":0,"anim":"idle","facing":0}]
+        "players":[{"x":level["player_x"],"y":level["player_y"],"image":f"assets/players/{player1_skin}.png","y_vel":0,"anim":"idle","facing":0},
+        {"x":level["player_x"],"y":level["player_y"],"image":f"assets/players/{player2_skin}.png","y_vel":0,"anim":"idle","facing":0}]
     }
     print(type(gamedata))
 
