@@ -15,7 +15,23 @@ tile_size = 76
 player_move_speed = 3
 
 #setup connection with server
-server_address=("localhost", 6789)
+# server_address=("localhost", 6789)
+IP = 'localhost'
+port = 6789
+
+temp_ip = input("IP Address: ")
+if temp_ip!="":
+    try:
+        IP = int(temp_ip)
+    except ValueError:
+        IP = temp_ip
+
+temp_port = input("Port: ")
+if temp_port!="":
+    port = int(temp_port)
+
+server_address = (IP,port)
+
 max_size=10000
 client=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(server_address)
