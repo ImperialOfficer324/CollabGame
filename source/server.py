@@ -20,7 +20,32 @@ temp_port = input("Port: ")
 if temp_port!="":
     port = int(temp_port)
 
+
 address = (IP,port)
+
+client1,addr1 = server.accept()
+client2,addr2 = server.accept()
+#data = client.recv(max_size)
+
+file_contents = ""
+
+with open('levels/level1.json', 'r') as level_file:
+    for line in level_file:
+        file_contents+=str(line)
+level=json.loads(file_contents)
+print(level)
+
+gamedata = {
+    "level":level,
+    "players":[{"x":level["player_x"],"y":level["player_y"],"image":"assets/players/player1.png","y_vel":0,"anim":"idle", "facing":0},
+    {"x":level["player_x"],"y":level["player_y"],"image":"assets/players/player2.png","y_vel":0,"anim":"idle", "facing":0}]
+}
+print(type(gamedata))
+
+gamedata_string = json.dumps(gamedata)
+
+zero = "0"
+one = "1"
 
 game_state = 1
 gamedata = {}

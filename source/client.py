@@ -91,10 +91,10 @@ gravity_counter = 0
 def display_players():
     p1 = pygame.Surface((50, 50))
     p1.set_colorkey((0,0,0))
-    p1.blit(players[1], (0, 0), ((player2_animation_state) * 50, 0, 50, 50))
+    p1.blit(players[1], (0, 0), ((player2_animation_state) * 50, (game_data["players"][1]["facing"]) * 50, 50, 50))
     p0 = pygame.Surface((50, 50))
     p0.set_colorkey((0,0,0))
-    p0.blit(players[0], (0, 0), ((player1_animation_state) * 50, 0, 50, 50))
+    p0.blit(players[0], (0, 0), ((player1_animation_state) * 50, (game_data["players"][0]["facing"]) * 50, 50, 50))
     if player_id == 0:
         window.blit(p1,(int(game_data["players"][1]["x"])-x_offset,int(game_data["players"][1]["y"])-y_offset))
         window.blit(p0,(int(game_data["players"][0]["x"])-x_offset,int(game_data["players"][0]["y"])-y_offset))
@@ -174,6 +174,11 @@ while game_state != 0:
                 if tile_1 != 1 and tile_2 != 1:
                     game_data["players"][player_id]["x"]+=player_move_speed
                     messages.send_message(f"move {player_id} {player_move_speed}|",client)
+            if player_id == 0:
+                game_data["players"][player_id]["facing"] = 0
+            if player_id == 1:
+                game_data["players"][player_id]["facing"] = 0
+            messages.send_message(f"face {player_id} 0 |",client)
         elif keys[pygame.K_LEFT]:
             new_x = (game_data["players"][player_id]["x"]-player_move_speed)
             player_y = game_data['players'][player_id]["y"]
@@ -186,7 +191,11 @@ while game_state != 0:
             if (tile_1 != 1 and tile_2 != 1) and new_x>0:
                 game_data["players"][player_id]["x"]-=player_move_speed
                 messages.send_message(f"move {player_id} -{player_move_speed}|",client)
-
+            if player_id == 0:
+                game_data["players"][player_id]["facing"] = 1
+            if player_id == 1:
+                game_data["players"][player_id]["facing"] = 1
+            messages.send_message(f"face {player_id} 1 |",client)
         # apply gravity to player
         if player_y_vel>0:
             new_y = (game_data["players"][player_id]["y"]+player_y_vel)+50
@@ -196,7 +205,7 @@ while game_state != 0:
                 messages.send_message(f'move {player_id} {game_data["level"]["player_x"]-game_data["players"][player_id]["x"]}|',client)
                 game_data["players"][player_id]["y"] = game_data["level"]["player_y"]
                 game_data["players"][player_id]["x"] = game_data["level"]["player_x"]
-            else:    
+            else:
                 player_x = game_data['players'][player_id]["x"]
 
                 tile_1 = game_data['level']['grid'][new_y//tile_size][player_x//tile_size]
@@ -204,7 +213,7 @@ while game_state != 0:
                 if player_x % tile_size != 0:
                     tile_2 = game_data['level']['grid'][new_y//tile_size][(player_x+50)//tile_size]
 
-                if tile_1 != 1 and tile_2 != 1:                
+                if tile_1 != 1 and tile_2 != 1:
                     game_data["players"][player_id]["y"]+=player_y_vel
                     messages.send_message(f"move y {player_id} {player_y_vel}|",client)
                     on_ground = 0
