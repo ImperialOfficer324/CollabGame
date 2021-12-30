@@ -12,7 +12,7 @@ WIDTH = 1000
 HEIGHT = 700
 
 tile_size = 76
-player_move_speed = 3
+player_move_speed = 7
 
 #setup connection with server
 # server_address=("localhost", 6789)
@@ -136,11 +136,18 @@ def listen_to_server(client):
 server_listener = threading.Thread(target=lambda:listen_to_server(client))
 server_listener.start()
 
+#scale the width and height to go around the player width and height
+
 while game_state != 0:
     clock.tick(60)
     if game_state == 1: # main game loop
-        x_offset = int(game_data["players"][player_id]["x"])*((len(game_data["level"]['grid'][0])*tile_size)/4250)
-        y_offset = int(game_data["players"][player_id]["y"])*((len(game_data["level"]['grid'])*tile_size)/2750)
+        scale_width = (((int(game_data["players"][player_id]["x"])) * (((len(game_data["level"]['grid'][0])*tile_size)))) / (((len(game_data["level"]['grid'][0])*tile_size)-50)))
+        scale_height = (((int(game_data["players"][player_id]["y"])) * (((len(game_data["level"]['grid'])*tile_size)))) / (((len(game_data["level"]['grid'][0])*tile_size)-50)))
+        x_offset = scale_width/2.91
+        y_offset = scale_height/2
+        #x_offset = int(game_data["players"][player_id]["x"])*((len(game_data["level"]['grid'][0])*tile_size)/4287.5) #1000
+        #y_offset = int(game_data["players"][player_id]["y"])*((len(game_data["level"]['grid'])*tile_size)/3215.625) #750
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 messages.send_message("quit",client)
