@@ -139,8 +139,8 @@ server_listener.start()
 while game_state != 0:
     clock.tick(60)
     if game_state == 1: # main game loop
-        x_offset = int(game_data["players"][player_id]["x"])//((len(game_data["level"]['grid'][0])*tile_size)/540)
-        y_offset = int(game_data["players"][player_id]["y"])//((len(game_data["level"]['grid'])*tile_size)/540)
+        x_offset = int(game_data["players"][player_id]["x"])*((len(game_data["level"]['grid'][0])*tile_size)/4250)
+        y_offset = int(game_data["players"][player_id]["y"])*((len(game_data["level"]['grid'])*tile_size)/2750)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 messages.send_message("quit",client)
