@@ -36,4 +36,9 @@ def _parse_message(message,game_data):
         direction = int(message.split(" ")[3])
         game_data["players"][player_id]["anim"] = [anim, state, direction]
         anim_changed = 1
+    elif "face " in message:
+        message = message.replace("face ","")
+        player_id = int(message.split(" ")[0])
+        val = int(message.split(" ")[1])
+        game_data["players"][player_id]["facing"]=val
     return game_data, [anim_changed,player_id]

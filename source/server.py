@@ -26,8 +26,8 @@ print(level)
 
 gamedata = {
     "level":level,
-    "players":[{"x":level["player_x"],"y":level["player_y"],"image":"assets/players/player1.png","y_vel":0,"anim":"idle"},
-    {"x":level["player_x"],"y":level["player_y"],"image":"assets/players/player2.png","y_vel":0,"anim":"idle"}]
+    "players":[{"x":level["player_x"],"y":level["player_y"],"image":"assets/players/player1.png","y_vel":0,"anim":"idle", "facing":0},
+    {"x":level["player_x"],"y":level["player_y"],"image":"assets/players/player2.png","y_vel":0,"anim":"idle", "facing":0}]
 }
 print(type(gamedata))
 
