@@ -171,7 +171,7 @@ def display_win_screen():
 
 frozen = 0
 freeze_counter = 0
-freeze_duration = 60
+freeze_duration = 500
 
 
 def display_players():
@@ -219,7 +219,8 @@ def listen_to_server(client):
             winner = win_data[1]
             game_state = 0
 
-        if game_data ["players"][player_id]["frozen"]:
+        if game_data["players"][player_id]["frozen"]:
+            # print("I got frozen")
             frozen = 1
             freeze_counter = 0
 
@@ -253,7 +254,7 @@ while game_state != 0:
                 quit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE or event.key == pygame.K_UP or event.key == pygame.K_w:
-                    if not frozen:
+                    if frozen==0:
                         if jumps>0:
                             jumps-=1
                             if player_id==0:
@@ -271,9 +272,11 @@ while game_state != 0:
                     if not frozen:
                         if player_id == 0:
                             if abs(game_data['players'][0]["x"] - game_data['players'][1]["x"]) <= player_width*1.5 and abs(game_data['players'][0]["y"] - game_data['players'][1]["y"]) <= player_height*1.5:
+                                #print("froze a player 1")
                                 messages.send_message(f"freeze 1|",client)
                         if player_id == 1:
                             if abs(game_data['players'][1]["x"] - game_data['players'][0]["x"]) <= player_width*1.5 and abs(game_data['players'][1]["y"] - game_data['players'][0]["y"]) <= player_height*1.5:
+                                #print("froze a player 0")
                                 messages.send_message(f"freeze 0|",client)
 
 
@@ -317,10 +320,10 @@ while game_state != 0:
                             winner = player_id
                             game_state = 0
                         if player_id == 0:
-                            game_data["players"][player_id]["facing"] = 0
+                            game_data["players"][player_id]["facing"] = 1
                         if player_id == 1:
-                            game_data["players"][player_id]["facing"] = 0
-                        messages.send_message(f"face {player_id} 0 |",client)
+                            game_data["players"][player_id]["facing"] = 1
+                        messages.send_message(f"face {player_id} 1 |",client)
         # apply gravity to player
         if player_y_vel>0:
             new_y = (game_data["players"][player_id]["y"]+player_y_vel)+50
