@@ -12,7 +12,7 @@ WIDTH = 1000
 HEIGHT = 700
 
 tile_size = 76
-player_move_speed = 7
+player_move_speed = 3
 
 #setup connection with server
 # server_address=("localhost", 6789)
@@ -162,7 +162,7 @@ while game_state != 0:
                 client.close()
                 quit()
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE or event.key == pygame.K_UP:
+                if event.key == pygame.K_SPACE or event.key == pygame.K_UP or event.key == pygame.K_w:
                     if jumps>0:
                         jumps-=1
                         if player_id==0:
@@ -177,7 +177,7 @@ while game_state != 0:
                             messages.send_message("anim 1 jump 3 1|",client)
                         player_y_vel -= 10
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_RIGHT]:
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             new_x = (game_data["players"][player_id]["x"]+player_move_speed)+50
             player_y = game_data['players'][player_id]["y"]
 
@@ -195,7 +195,7 @@ while game_state != 0:
             if player_id == 1:
                 game_data["players"][player_id]["facing"] = 0
             messages.send_message(f"face {player_id} 0 |",client)
-        elif keys[pygame.K_LEFT]:
+        elif keys[pygame.K_LEFT] or keys[pygame.K_a]:
             new_x = (game_data["players"][player_id]["x"]-player_move_speed)
             player_y = game_data['players'][player_id]["y"]
 
