@@ -63,8 +63,8 @@ def load_server(address,max_size):
 
     gamedata = {
         "level":level,
-        "players":[{"x":level["player_x"],"y":level["player_y"],"image":f"assets/players/{player1_skin}.png","y_vel":0,"anim":"idle","facing":0},
-        {"x":level["player_x"],"y":level["player_y"],"image":f"assets/players/{player2_skin}.png","y_vel":0,"anim":"idle","facing":0}]
+        "players":[{"x":level["player_x"],"y":level["player_y"],"image":f"assets/players/{player1_skin}.png","y_vel":0,"anim":"idle","facing":0, "frozen":0},
+        {"x":level["player_x"],"y":level["player_y"],"image":f"assets/players/{player2_skin}.png","y_vel":0,"anim":"idle","facing":0, "frozen":0}]
     }
     print(type(gamedata))
 
