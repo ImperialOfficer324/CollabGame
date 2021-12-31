@@ -90,6 +90,10 @@ jumps = num_jumps
 player_y_vel = 0
 gravity_counter = 0
 
+frozen = 0
+freeze_counter = 0
+freeze_duration = 500
+
 def display_players():
     p1 = pygame.Surface((50, 50))
     p1.set_colorkey((0,0,0))
@@ -113,6 +117,8 @@ def listen_to_server(client):
     global player2_animation_direction
     global game_data
     global game_state
+    global frozen
+    global freeze_counter
     while game_state:
         msg = client.recv(max_size)
         if(str(msg,"utf-8") == "quit"):
@@ -128,8 +134,9 @@ def listen_to_server(client):
                 player2_animation = game_data["players"][1]["anim"][0]
                 player2_animation_state = game_data["players"][1]["anim"][1]
                 player2_animation_direction = game_data["players"][1]["anim"][2]
-
-                # print(f'{player2_animation} {player2_animation_state} {player2_animation_direction}')
+        if game_data ["players"][player_id]["frozen"]:
+            frozen = 1
+            freeze_counter = 0
 
         # print(f'recieved message {str(msg,"utf-8")}')
 
@@ -163,55 +170,68 @@ while game_state != 0:
                 quit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE or event.key == pygame.K_UP or event.key == pygame.K_w:
-                    if jumps>0:
-                        jumps-=1
-                        if player_id==0:
-                            player1_animation = "jump"
-                            player1_animation_state = 3
-                            player1_animation_direction = 1
-                            messages.send_message("anim 0 jump 3 1|",client)
-                        else:
-                            player2_animation = "jump"
-                            player2_animation_state = 3
-                            player2_animation_direction = 1
-                            messages.send_message("anim 1 jump 3 1|",client)
-                        player_y_vel -= 10
+                    if not frozen:
+                        if jumps>0:
+                            jumps-=1
+                            if player_id==0:
+                                player1_animation = "jump"
+                                player1_animation_state = 3
+                                player1_animation_direction = 1
+                                messages.send_message("anim 0 jump 3 1|",client)
+                            else:
+                                player2_animation = "jump"
+                                player2_animation_state = 3
+                                player2_animation_direction = 1
+                                messages.send_message("anim 1 jump 3 1|",client)
+                            player_y_vel -= 10
+                if event.key == pygame.K_DOWN or event.key == pygame.K_s:
+                    if not frozen:
+                        if player_id == 0:
+                            if abs(game_data['players'][0]["x"] - game_data['players'][1]["x"]) <= player_width*1.5 and abs(game_data['players'][0]["y"] - game_data['players'][1]["y"]) <= player_height*1.5:
+                                messages.send_message(f"freeze 1|",client)
+                        if player_id == 1:
+                            if abs(game_data['players'][1]["x"] - game_data['players'][0]["x"]) <= player_width*1.5 and abs(game_data['players'][1]["y"] - game_data['players'][0]["y"]) <= player_height*1.5:
+                                messages.send_message(f"freeze 0|",client)
+
+
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            new_x = (game_data["players"][player_id]["x"]+player_move_speed)+50
-            player_y = game_data['players'][player_id]["y"]
+            if not frozen:
+                new_x = (game_data["players"][player_id]["x"]+player_move_speed)+50
+                player_y = game_data['players'][player_id]["y"]
 
-            if new_x<(len(game_data["level"]['grid'][0])*tile_size):
+                if new_x<(len(game_data["level"]['grid'][0])*tile_size):
+                    tile_1 = game_data['level']['grid'][game_data['players'][player_id]["y"]//tile_size][new_x//tile_size]
+                    tile_2 = 0
+                    if player_y % tile_size != 0:
+                        tile_2 = game_data['level']["grid"][(game_data["players"][player_id]["y"]+50)//tile_size][new_x//tile_size]
+
+                    if tile_1 != 1 and tile_2 != 1:
+                        game_data["players"][player_id]["x"]+=player_move_speed
+                        messages.send_message(f"move {player_id} {player_move_speed}|",client)
+                if player_id == 0:
+                    game_data["players"][player_id]["facing"] = 0
+                if player_id == 1:
+                    game_data["players"][player_id]["facing"] = 0
+                messages.send_message(f"face {player_id} 0 |",client)
+        elif keys[pygame.K_LEFT] or keys[pygame.K_a]:
+            if not frozen:
+                new_x = (game_data["players"][player_id]["x"]-player_move_speed)
+                player_y = game_data['players'][player_id]["y"]
+
                 tile_1 = game_data['level']['grid'][game_data['players'][player_id]["y"]//tile_size][new_x//tile_size]
                 tile_2 = 0
                 if player_y % tile_size != 0:
                     tile_2 = game_data['level']["grid"][(game_data["players"][player_id]["y"]+50)//tile_size][new_x//tile_size]
 
-                if tile_1 != 1 and tile_2 != 1:
-                    game_data["players"][player_id]["x"]+=player_move_speed
-                    messages.send_message(f"move {player_id} {player_move_speed}|",client)
-            if player_id == 0:
-                game_data["players"][player_id]["facing"] = 0
-            if player_id == 1:
-                game_data["players"][player_id]["facing"] = 0
-            messages.send_message(f"face {player_id} 0 |",client)
-        elif keys[pygame.K_LEFT] or keys[pygame.K_a]:
-            new_x = (game_data["players"][player_id]["x"]-player_move_speed)
-            player_y = game_data['players'][player_id]["y"]
-
-            tile_1 = game_data['level']['grid'][game_data['players'][player_id]["y"]//tile_size][new_x//tile_size]
-            tile_2 = 0
-            if player_y % tile_size != 0:
-                tile_2 = game_data['level']["grid"][(game_data["players"][player_id]["y"]+50)//tile_size][new_x//tile_size]
-
-            if (tile_1 != 1 and tile_2 != 1) and new_x>0:
-                game_data["players"][player_id]["x"]-=player_move_speed
-                messages.send_message(f"move {player_id} -{player_move_speed}|",client)
-            if player_id == 0:
-                game_data["players"][player_id]["facing"] = 1
-            if player_id == 1:
-                game_data["players"][player_id]["facing"] = 1
-            messages.send_message(f"face {player_id} 1 |",client)
+                if (tile_1 != 1 and tile_2 != 1) and new_x>0:
+                    game_data["players"][player_id]["x"]-=player_move_speed
+                    messages.send_message(f"move {player_id} -{player_move_speed}|",client)
+                if player_id == 0:
+                    game_data["players"][player_id]["facing"] = 1
+                if player_id == 1:
+                    game_data["players"][player_id]["facing"] = 1
+                messages.send_message(f"face {player_id} 1 |",client)
         # apply gravity to player
         if player_y_vel>0:
             new_y = (game_data["players"][player_id]["y"]+player_y_vel)+50
@@ -296,7 +316,8 @@ while game_state != 0:
                     player1_animation_state = 0
                     player1_animation_direction = 1
                     #messages.send_message("anim 0 idle 0 1|",client)
-
+            elif player1_animation == "freeze":
+                
 
             if player2_animation == "idle":
                 player2_animation_state += player2_animation_direction
@@ -323,6 +344,12 @@ while game_state != 0:
                     player2_animation_direction = 1
                     #messages.send_message("anim 1 idle 0 1|",client)
             animation_counter = 0
+
+        if frozen:
+            if freeze_counter >= freeze_duration:
+                frozen = 0
+                freeze_counter = 0
+            freeze_counter += 1
 
         display_tiles()
         display_players()
