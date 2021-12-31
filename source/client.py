@@ -136,17 +136,30 @@ def listen_to_server(client):
 server_listener = threading.Thread(target=lambda:listen_to_server(client))
 server_listener.start()
 
-#scale the width and height to go around the player width and height
+player_width = 50
+player_height = 50
+level_width = len(game_data["level"]['grid'][0])*tile_size
+level_height = len(game_data["level"]['grid'])*tile_size
+if level_width >= WIDTH:
+    max_x_offset = level_width - WIDTH
+else: max_x_offset = 0
+if level_width >= HEIGHT:
+    max_y_offset = level_height - HEIGHT
+else: max_y_offset = 0
+max_char_x = level_width - player_width
+max_char_y = level_height - player_height
 
 while game_state != 0:
     clock.tick(60)
     if game_state == 1: # main game loop
-        scale_width = (((int(game_data["players"][player_id]["x"])) * (((len(game_data["level"]['grid'][0])*tile_size)))) / (((len(game_data["level"]['grid'][0])*tile_size)-50)))
-        scale_height = (((int(game_data["players"][player_id]["y"])) * (((len(game_data["level"]['grid'])*tile_size)))) / (((len(game_data["level"]['grid'][0])*tile_size)-50)))
-        x_offset = scale_width/2.91
-        y_offset = scale_height/2
-        #x_offset = int(game_data["players"][player_id]["x"])*((len(game_data["level"]['grid'][0])*tile_size)/4287.5) #1000
+        #scale_width = (((int(game_data["players"][player_id]["x"])) * (((len(game_data["level"]['grid'][0])*tile_size)))) / (((len(game_data["level"]['grid'][0])*tile_size)-50)))
+        #scale_height = (((int(game_data["players"][player_id]["y"])) * (((len(game_data["level"]['grid'])*tile_size)))) / (((len(game_data["level"]['grid'])*tile_size)-50)))
+        #x_offset = scale_width
+        #y_offset = scale_height
+        #x_offset = (int(game_data["players"][player_id]["x"]))*((len(game_data["level"]['grid'][0])*tile_size)/4287.5) #1000
         #y_offset = int(game_data["players"][player_id]["y"])*((len(game_data["level"]['grid'])*tile_size)/3215.625) #750
+        x_offset = int(((int(game_data["players"][player_id]["x"])) / max_char_x) * max_x_offset)
+        y_offset = int(((int(game_data["players"][player_id]["y"])) / max_char_y) * max_y_offset)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
