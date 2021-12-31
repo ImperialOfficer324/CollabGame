@@ -152,12 +152,6 @@ max_char_y = level_height - player_height
 while game_state != 0:
     clock.tick(60)
     if game_state == 1: # main game loop
-        #scale_width = (((int(game_data["players"][player_id]["x"])) * (((len(game_data["level"]['grid'][0])*tile_size)))) / (((len(game_data["level"]['grid'][0])*tile_size)-50)))
-        #scale_height = (((int(game_data["players"][player_id]["y"])) * (((len(game_data["level"]['grid'])*tile_size)))) / (((len(game_data["level"]['grid'])*tile_size)-50)))
-        #x_offset = scale_width
-        #y_offset = scale_height
-        #x_offset = (int(game_data["players"][player_id]["x"]))*((len(game_data["level"]['grid'][0])*tile_size)/4287.5) #1000
-        #y_offset = int(game_data["players"][player_id]["y"])*((len(game_data["level"]['grid'])*tile_size)/3215.625) #750
         x_offset = int(((int(game_data["players"][player_id]["x"])) / max_char_x) * max_x_offset)
         y_offset = int(((int(game_data["players"][player_id]["y"])) / max_char_y) * max_y_offset)
 
