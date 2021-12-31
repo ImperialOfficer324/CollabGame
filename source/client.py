@@ -316,8 +316,6 @@ while game_state != 0:
                     player1_animation_state = 0
                     player1_animation_direction = 1
                     #messages.send_message("anim 0 idle 0 1|",client)
-            elif player1_animation == "freeze":
-                
 
             if player2_animation == "idle":
                 player2_animation_state += player2_animation_direction
