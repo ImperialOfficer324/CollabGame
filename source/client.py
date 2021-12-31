@@ -171,7 +171,7 @@ def display_win_screen():
 
 frozen = 0
 freeze_counter = 0
-freeze_duration = 500
+freeze_duration = 30
 
 
 def display_players():
@@ -219,7 +219,7 @@ def listen_to_server(client):
             winner = win_data[1]
             game_state = 0
 
-        if game_data["players"][player_id]["frozen"]:
+        if game_data["players"][player_id]["frozen"] and not frozen:
             # print("I got frozen")
             frozen = 1
             freeze_counter = 0
@@ -254,7 +254,7 @@ while game_state != 0:
                 quit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE or event.key == pygame.K_UP or event.key == pygame.K_w:
-                    if frozen==0:
+                    if not frozen:
                         if jumps>0:
                             jumps-=1
                             if player_id==0:
@@ -445,7 +445,8 @@ while game_state != 0:
             animation_counter = 0
 
         if frozen:
-            if freeze_counter >= freeze_duration:
+            if freeze_counter > freeze_duration:
+                game_data["players"][player_id]["frozen"] = 0
                 frozen = 0
                 freeze_counter = 0
             freeze_counter += 1
