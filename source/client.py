@@ -300,48 +300,27 @@ while game_state != 0:
         elif keys[pygame.K_LEFT] or keys[pygame.K_a]:
             if not frozen:
                 new_x = (game_data["players"][player_id]["x"]-player_move_speed)
-                player_y = game_data['players'][player_id]["y"]
+                if new_x>0:
+                    player_y = game_data['players'][player_id]["y"]
 
-                tile_1 = game_data['level']['grid'][game_data['players'][player_id]["y"]//tile_size][new_x//tile_size]
-                tile_2 = 0
-                if player_y % tile_size != 0:
-                    tile_2 = game_data['level']["grid"][(game_data["players"][player_id]["y"]+50)//tile_size][new_x//tile_size]
+                    tile_1 = game_data['level']['grid'][game_data['players'][player_id]["y"]//tile_size][new_x//tile_size]
+                    tile_2 = 0
+                    if player_y % tile_size != 0:
+                        tile_2 = game_data['level']["grid"][(game_data["players"][player_id]["y"]+50)//tile_size][new_x//tile_size]
 
-                if tile_1 != 1 and tile_2 != 1:
-                    game_data["players"][player_id]["x"]+=player_move_speed
-                    messages.send_message(f"move {player_id} {player_move_speed}|",client)
-                    if tile_1==2 or tile_2==2:
-                        print("reached the end")
-                        messages.send_message(f"win {player_id}|",client)
-                        winner = player_id
-                        game_state = 0
-            if player_id == 0:
-                game_data["players"][player_id]["facing"] = 0
-            if player_id == 1:
-                game_data["players"][player_id]["facing"] = 0
-            messages.send_message(f"face {player_id} 0 |",client)
-        elif keys[pygame.K_LEFT]:
-            new_x = (game_data["players"][player_id]["x"]-player_move_speed)
-            player_y = game_data['players'][player_id]["y"]
-
-            tile_1 = game_data['level']['grid'][game_data['players'][player_id]["y"]//tile_size][new_x//tile_size]
-            tile_2 = 0
-            if player_y % tile_size != 0:
-                tile_2 = game_data['level']["grid"][(game_data["players"][player_id]["y"]+50)//tile_size][new_x//tile_size]
-
-            if (tile_1 != 1 and tile_2 != 1) and new_x>0:
-                game_data["players"][player_id]["x"]-=player_move_speed
-                messages.send_message(f"move {player_id} -{player_move_speed}|",client)
-                if tile_1==2 or tile_2==2:
-                    print("reached the end")
-                    messages.send_message(f"win {player_id} |",client)
-                    winner = player_id
-                    game_state = 0
-            if player_id == 0:
-                game_data["players"][player_id]["facing"] = 1
-            if player_id == 1:
-                game_data["players"][player_id]["facing"] = 1
-            messages.send_message(f"face {player_id} 1 |",client)
+                    if tile_1 != 1 and tile_2 != 1:
+                        game_data["players"][player_id]["x"]-=player_move_speed
+                        messages.send_message(f"move {player_id} -{player_move_speed}|",client)
+                        if tile_1==2 or tile_2==2:
+                            print("reached the end")
+                            messages.send_message(f"win {player_id}|",client)
+                            winner = player_id
+                            game_state = 0
+                        if player_id == 0:
+                            game_data["players"][player_id]["facing"] = 0
+                        if player_id == 1:
+                            game_data["players"][player_id]["facing"] = 0
+                        messages.send_message(f"face {player_id} 0 |",client)
         # apply gravity to player
         if player_y_vel>0:
             new_y = (game_data["players"][player_id]["y"]+player_y_vel)+50
