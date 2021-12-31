@@ -90,6 +90,85 @@ jumps = num_jumps
 player_y_vel = 0
 gravity_counter = 0
 
+winner = 0
+
+def display_win_screen():
+    global winner
+    global x_offset, y_offset
+    fadeout = pygame.Surface((WIDTH,HEIGHT))
+    fadeout = fadeout.convert()
+    fadeout.fill((0,0,0))
+    fadeout.set_alpha(250)
+    displaying_anim = True
+    fireworks = pygame.transform.scale(pygame.image.load("assets/misc/fireworks.png"),(3040,380))
+    crown = pygame.transform.scale(pygame.image.load('assets/misc/crown.png'),(250,300))
+    firework_state = 0
+    counter = 0
+    darkness = 0
+    fade = -1
+    fw = pygame.Surface((380, 380))
+    fw.set_colorkey((0,0,0))
+    while displaying_anim:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                client.close()
+                quit()
+        # x_offset = 
+        display_tiles()
+        display_players()
+        window.blit(fadeout,(0,0))
+        if darkness>0 and fade==1:
+            darkness-=1
+            fadeout.set_alpha(darkness)
+        elif fade==-1 and darkness<250:
+            darkness+=1
+            fadeout.set_alpha(darkness)
+        elif darkness<=0 and fade == 1:
+            fade = 0
+        elif darkness>=250 and fade == -1:
+            displaying_anim = False
+        elif fade == 0:
+            counter+=1
+            if counter>50:
+                fade = -1
+        pygame.display.update()
+    
+    display_winner = True
+    counter = 0
+    p1 = pygame.Surface((250, 250))
+    p1.set_colorkey((0,0,0))
+    p1.blit(pygame.transform.scale(players[1],(250*9,500)), (0, 0), (0, 0, 250, 250))
+    p0 = pygame.Surface((250, 250))
+    p0.set_colorkey((0,0,0))
+    p0.blit(pygame.transform.scale(players[0],(250*9,500)), (0, 0), (0, 0, 250, 250))
+    while display_winner:
+        clock.tick(60)
+        window.fill((0,0,0))
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                client.close()
+                quit()
+        window.blit(p0,(200,250))
+        window.blit(p1,(550,250))
+        if winner == 0:
+            window.blit(crown,(200,200))
+        else:
+            window.blit(crown,(550,200))
+        fw.fill((0,0,0,0))
+        if firework_state<9:
+            fw.blit(fireworks, (0, 0), ((firework_state) * 380, 0, 380, 380))
+            if winner == 0:
+                window.blit(fw,(200-65,250-65))
+            else:
+                window.blit(fw,(550-65,250-65))
+            counter+=1
+            if counter>anim_speed:
+                firework_state+=1
+                counter = 0
+        pygame.display.update()
+
 def display_players():
     p1 = pygame.Surface((50, 50))
     p1.set_colorkey((0,0,0))
@@ -113,12 +192,13 @@ def listen_to_server(client):
     global player2_animation_direction
     global game_data
     global game_state
+    global winner
     while game_state:
         msg = client.recv(max_size)
         if(str(msg,"utf-8") == "quit"):
             print("quit")
             game_state = 0
-        game_data,anim_data = messages.parse_message(msg,game_data)
+        game_data,anim_data,win_data = messages.parse_message(msg,game_data)
         if anim_data[0]==1:
             if anim_data[1]==0:
                 player1_animation = game_data["players"][0]["anim"][0]
@@ -128,6 +208,10 @@ def listen_to_server(client):
                 player2_animation = game_data["players"][1]["anim"][0]
                 player2_animation_state = game_data["players"][1]["anim"][1]
                 player2_animation_direction = game_data["players"][1]["anim"][2]
+        
+        if win_data[0]==1:
+            winner = win_data[1]
+            game_state = 0
 
                 # print(f'{player2_animation} {player2_animation_state} {player2_animation_direction}')
 
@@ -176,6 +260,11 @@ while game_state != 0:
                 if tile_1 != 1 and tile_2 != 1:
                     game_data["players"][player_id]["x"]+=player_move_speed
                     messages.send_message(f"move {player_id} {player_move_speed}|",client)
+                    if tile_1==2 or tile_2==2:
+                        print("reached the end")
+                        messages.send_message(f"win {player_id}|",client)
+                        winner = player_id
+                        game_state = 0
             if player_id == 0:
                 game_data["players"][player_id]["facing"] = 0
             if player_id == 1:
@@ -193,6 +282,11 @@ while game_state != 0:
             if (tile_1 != 1 and tile_2 != 1) and new_x>0:
                 game_data["players"][player_id]["x"]-=player_move_speed
                 messages.send_message(f"move {player_id} -{player_move_speed}|",client)
+                if tile_1==2 or tile_2==2:
+                    print("reached the end")
+                    messages.send_message(f"win {player_id} |",client)
+                    winner = player_id
+                    game_state = 0
             if player_id == 0:
                 game_data["players"][player_id]["facing"] = 1
             if player_id == 1:
@@ -219,6 +313,11 @@ while game_state != 0:
                     game_data["players"][player_id]["y"]+=player_y_vel
                     messages.send_message(f"move y {player_id} {player_y_vel}|",client)
                     on_ground = 0
+                    if tile_1==2 or tile_2==2:
+                        print("reached the end")
+                        messages.send_message(f"win {player_id} |",client)
+                        winner = player_id
+                        game_state = 0
                 else:
                     player_y_vel = 0
                     if on_ground == 0:
@@ -247,6 +346,10 @@ while game_state != 0:
             if tile_1 != 1 and tile_2 != 1:
                 game_data["players"][player_id]["y"]+=player_y_vel
                 messages.send_message(f"move y {player_id} {player_y_vel}|",client)
+                if tile_1==2 or tile_2==2:
+                    messages.send_message(f"win {player_id} |",client)
+                    winner = player_id
+                    game_state = 0
             else:
                 player_y_vel = 0
 
@@ -313,6 +416,8 @@ while game_state != 0:
         display_tiles()
         display_players()
         pygame.display.update()
+
+display_win_screen()
 
 #close client
 client.close()

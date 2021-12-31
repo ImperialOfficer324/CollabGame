@@ -109,8 +109,12 @@ def load_server(address,max_size):
                 server.close()
                 game_state = 0
                 quit()
-            gamedata,anim_data = messages.parse_message(msg_bytes,gamedata)
+            gamedata,anim_data,win_data = messages.parse_message(msg_bytes,gamedata)
             other_client.sendall(msg_bytes)
+            if(win_data[0]==1):
+                print("someone reached the end")                
+                game_state = 0
+                server.close()
 
     client1.sendall(bytes(gamedata_string,"utf-8"))
     client2.sendall(bytes(gamedata_string,"utf-8"))
