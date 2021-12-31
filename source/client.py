@@ -114,7 +114,7 @@ def display_win_screen():
                 pygame.quit()
                 client.close()
                 quit()
-        # x_offset = 
+        # x_offset =
         display_tiles()
         display_players()
         window.blit(fadeout,(0,0))
@@ -133,7 +133,7 @@ def display_win_screen():
             if counter>50:
                 fade = -1
         pygame.display.update()
-    
+
     display_winner = True
     counter = 0
     p1 = pygame.Surface((250, 250))
@@ -171,7 +171,7 @@ def display_win_screen():
 
 frozen = 0
 freeze_counter = 0
-freeze_duration = 500
+freeze_duration = 60
 
 
 def display_players():
@@ -214,11 +214,11 @@ def listen_to_server(client):
             else:
                 player2_animation = game_data["players"][1]["anim"][0]
                 player2_animation_state = game_data["players"][1]["anim"][1]
-                player2_animation_direction = game_data["players"][1]["anim"][2]        
+                player2_animation_direction = game_data["players"][1]["anim"][2]
         if win_data[0]==1:
             winner = win_data[1]
             game_state = 0
-            
+
         if game_data ["players"][player_id]["frozen"]:
             frozen = 1
             freeze_counter = 0
