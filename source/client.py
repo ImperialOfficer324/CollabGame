@@ -67,6 +67,8 @@ tiles = [pygame.transform.scale(pygame.image.load("assets/tiles/sky.png"),(tile_
 players = [pygame.transform.scale(pygame.image.load(game_data["players"][0]["image"]),(450,100)),
             pygame.transform.scale(pygame.image.load(game_data["players"][1]["image"]),(450,100))]
 
+freeze_vfx = pygame.transform.scale(pygame.image.load("assets/misc/freeze.png"),(50,50))
+
 def display_tiles():
     window.fill((0,0,0));
     for row_count,row in enumerate(game_data["level"]["grid"]):
@@ -187,6 +189,11 @@ def display_players():
     else:
         window.blit(p0,(int(game_data["players"][0]["x"])-x_offset,int(game_data["players"][0]["y"])-y_offset))
         window.blit(p1,(int(game_data["players"][1]["x"])-x_offset,int(game_data["players"][1]["y"])-y_offset))
+    
+    if game_data["players"][0]["frozen"]:
+        window.blit(freeze_vfx,(int(game_data["players"][0]["x"])-x_offset,int(game_data["players"][0]["y"])-y_offset))
+    if game_data["players"][1]["frozen"]:
+        window.blit(freeze_vfx,(int(game_data["players"][1]["x"])-x_offset,int(game_data["players"][1]["y"])-y_offset))
 
 def listen_to_server(client):
     global player1_animation
@@ -273,11 +280,13 @@ while game_state != 0:
                         if player_id == 0:
                             if abs(game_data['players'][0]["x"] - game_data['players'][1]["x"]) <= player_width*1.5 and abs(game_data['players'][0]["y"] - game_data['players'][1]["y"]) <= player_height*1.5:
                                 #print("froze a player 1")
-                                messages.send_message(f"freeze 1|",client)
+                                messages.send_message(f"freeze 1 1|",client)
+                                game_data['players'][1]["frozen"] = 1;
                         if player_id == 1:
                             if abs(game_data['players'][1]["x"] - game_data['players'][0]["x"]) <= player_width*1.5 and abs(game_data['players'][1]["y"] - game_data['players'][0]["y"]) <= player_height*1.5:
                                 #print("froze a player 0")
-                                messages.send_message(f"freeze 0|",client)
+                                messages.send_message(f"freeze 0 1|",client)
+                                game_data['players'][0]["frozen"] = 1;
 
 
         keys = pygame.key.get_pressed()
@@ -447,6 +456,7 @@ while game_state != 0:
         if frozen:
             if freeze_counter > freeze_duration:
                 game_data["players"][player_id]["frozen"] = 0
+                messages.send_message(f"freeze {player_id} 0",client)
                 frozen = 0
                 freeze_counter = 0
             freeze_counter += 1
