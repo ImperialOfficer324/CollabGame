@@ -63,8 +63,8 @@ def load_server(address,max_size):
 
     gamedata = {
         "level":level,
-        "players":[{"x":level["player_x"],"y":level["player_y"],"image":f"assets/players/{player1_skin}.png","y_vel":0,"anim":"idle","facing":0, "frozen":0},
-        {"x":level["player_x"],"y":level["player_y"],"image":f"assets/players/{player2_skin}.png","y_vel":0,"anim":"idle","facing":0, "frozen":0}]
+        "players":[{"x":level["player_x"],"y":level["player_y"],"image":f"assets/players/{player1_skin}.png","y_vel":0,"x_vel":0,"anim":"idle","facing":0,"frozen":0},
+        {"x":level["player_x"],"y":level["player_y"],"image":f"assets/players/{player2_skin}.png","y_vel":0,"x_vel":0,"anim":"idle","facing":0,"frozen":0}]
     }
     print(type(gamedata))
 
@@ -112,7 +112,7 @@ def load_server(address,max_size):
             gamedata,anim_data,win_data = messages.parse_message(msg_bytes,gamedata)
             other_client.sendall(msg_bytes)
             if(win_data[0]==1):
-                print("someone reached the end")                
+                print("someone reached the end")
                 game_state = 0
                 server.close()
 

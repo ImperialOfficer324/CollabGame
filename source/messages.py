@@ -53,4 +53,9 @@ def _parse_message(message,game_data):
         message = message.replace("freeze ","")
         player_id = int(message.split(" ")[0])
         game_data["players"][player_id]["frozen"]=1
+    elif "punch " in message:
+        message = message.replace("punch ","")
+        player_id = int(message.split(" ")[0])
+        val = int(message.split(" ")[1])
+        game_data["players"][player_id]["x_vel"] += val
     return game_data, [anim_changed,player_id], [win,player_id]
