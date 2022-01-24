@@ -67,7 +67,17 @@ tiles = [pygame.transform.scale(pygame.image.load("assets/tiles/sky.png"),(tile_
 players = [pygame.transform.scale(pygame.image.load(game_data["players"][0]["image"]),(450,100)),
             pygame.transform.scale(pygame.image.load(game_data["players"][1]["image"]),(450,100))]
 
-freeze_vfx = pygame.transform.scale(pygame.image.load("assets/misc/freeze.png"),(50,50))
+freeze_vfx_img = pygame.transform.scale(pygame.image.load("assets/misc/freeze.png"),(100,50))
+freeze_vfx = []
+freeze_vfx_1 = pygame.Surface((50, 50))
+freeze_vfx_1.set_colorkey((0,0,0))
+freeze_vfx_1.blit(freeze_vfx_img, (0, 0), (0, 0, 50, 50))
+freeze_vfx_2 = pygame.Surface((50, 50))
+freeze_vfx_2.set_colorkey((0,0,0))
+freeze_vfx_2.blit(freeze_vfx_img, (0, 0), (50, 0, 50, 50))
+
+freeze_vfx.append(freeze_vfx_1)
+freeze_vfx.append(freeze_vfx_2)
 
 def display_tiles():
     window.fill((0,0,0));
@@ -185,15 +195,18 @@ def display_players():
     p0.blit(players[0], (0, 0), ((player1_animation_state) * 50, (game_data["players"][0]["facing"]) * 50, 50, 50))
     if player_id == 0:
         window.blit(p1,(int(game_data["players"][1]["x"])-x_offset,int(game_data["players"][1]["y"])-y_offset))
+        if game_data["players"][1]["frozen"]:
+            window.blit(freeze_vfx[game_data["players"][1]["facing"]],(int(game_data["players"][1]["x"])-x_offset,int(game_data["players"][1]["y"])-y_offset))
         window.blit(p0,(int(game_data["players"][0]["x"])-x_offset,int(game_data["players"][0]["y"])-y_offset))
+        if game_data["players"][0]["frozen"]:
+            window.blit(freeze_vfx[game_data["players"][0]["facing"]],(int(game_data["players"][0]["x"])-x_offset,int(game_data["players"][0]["y"])-y_offset))
     else:
         window.blit(p0,(int(game_data["players"][0]["x"])-x_offset,int(game_data["players"][0]["y"])-y_offset))
+        if game_data["players"][0]["frozen"]:
+            window.blit(freeze_vfx[game_data["players"][0]["facing"]],(int(game_data["players"][0]["x"])-x_offset,int(game_data["players"][0]["y"])-y_offset))
         window.blit(p1,(int(game_data["players"][1]["x"])-x_offset,int(game_data["players"][1]["y"])-y_offset))
-    
-    if game_data["players"][0]["frozen"]:
-        window.blit(freeze_vfx,(int(game_data["players"][0]["x"])-x_offset,int(game_data["players"][0]["y"])-y_offset))
-    if game_data["players"][1]["frozen"]:
-        window.blit(freeze_vfx,(int(game_data["players"][1]["x"])-x_offset,int(game_data["players"][1]["y"])-y_offset))
+        if game_data["players"][1]["frozen"]:
+            window.blit(freeze_vfx[game_data["players"][1]["facing"]],(int(game_data["players"][1]["x"])-x_offset,int(game_data["players"][1]["y"])-y_offset))
 
 def listen_to_server(client):
     global player1_animation
@@ -278,12 +291,12 @@ while game_state != 0:
                 if event.key == pygame.K_DOWN or event.key == pygame.K_s:
                     if not frozen:
                         if player_id == 0:
-                            if abs(game_data['players'][0]["x"] - game_data['players'][1]["x"]) <= player_width*1.5 and abs(game_data['players'][0]["y"] - game_data['players'][1]["y"]) <= player_height*1.5:
+                            if abs((game_data['players'][0]["x"]+25) - (game_data['players'][1]["x"])+25) <= player_width*1.5 and abs((game_data['players'][0]["y"]+25) - (game_data['players'][1]["y"])+25) <= player_width*1.5:
                                 #print("froze a player 1")
                                 messages.send_message(f"freeze 1 1|",client)
                                 game_data['players'][1]["frozen"] = 1;
                         if player_id == 1:
-                            if abs(game_data['players'][1]["x"] - game_data['players'][0]["x"]) <= player_width*1.5 and abs(game_data['players'][1]["y"] - game_data['players'][0]["y"]) <= player_height*1.5:
+                            if abs((game_data['players'][1]["x"]+25) - (game_data['players'][0]["x"])+25) <= player_width*1.5 and abs((game_data['players'][1]["y"]+25) - (game_data['players'][0]["y"])+25) <= player_width*1.5:
                                 #print("froze a player 0")
                                 messages.send_message(f"freeze 0 1|",client)
                                 game_data['players'][0]["frozen"] = 1;
@@ -402,55 +415,56 @@ while game_state != 0:
 
         animation_counter += 1
         if animation_counter == anim_speed:
-            if player1_animation == "idle":
-                player1_animation_state += player1_animation_direction
-                if player1_animation_state == 2:
-                    player1_animation_direction = -1
-                if player1_animation_state == 0:
-                    player1_animation_direction = 1
-            elif player1_animation == "jump":
-                player1_animation_state += player1_animation_direction
-                if player1_animation_state == 5:
-                    player1_animation_direction = -1
-                if player1_animation_state < 3:
-                    player1_animation = "idle"
-                    player1_animation_state = 0
-                    player1_animation_direction = 1
-                    #messages.send_message("anim 0 idle 0 1|",client)
-            elif player1_animation == "land":
-                player1_animation_state += player1_animation_direction
-                if player1_animation_state == 8:
-                    player1_animation_direction = -1
-                if player1_animation_state < 6:
-                    player1_animation = "idle"
-                    player1_animation_state = 0
-                    player1_animation_direction = 1
-                    #messages.send_message("anim 0 idle 0 1|",client)
-
-            if player2_animation == "idle":
-                player2_animation_state += player2_animation_direction
-                if player2_animation_state == 2:
-                    player2_animation_direction = -1
-                if player2_animation_state == 0:
-                    player2_animation_direction = 1
-            elif player2_animation == "jump":
-                player2_animation_state += player2_animation_direction
-                if player2_animation_state == 5:
-                    player2_animation_direction = -1
-                if player2_animation_state < 3:
-                    player2_animation = "idle"
-                    player2_animation_state = 0
-                    player2_animation_direction = 1
-                    #messages.send_message("anim 1 idle 0 1|",client)
-            elif player2_animation == "land":
-                player2_animation_state += player2_animation_direction
-                if player2_animation_state == 8:
-                    player2_animation_direction = -1
-                if player2_animation_state < 6:
-                    player2_animation = "idle"
-                    player2_animation_state = 0
-                    player2_animation_direction = 1
-                    #messages.send_message("anim 1 idle 0 1|",client)
+            if not game_data["players"][0]["frozen"]:
+                if player1_animation == "idle":
+                    player1_animation_state += player1_animation_direction
+                    if player1_animation_state == 2:
+                        player1_animation_direction = -1
+                    if player1_animation_state == 0:
+                        player1_animation_direction = 1
+                elif player1_animation == "jump":
+                    player1_animation_state += player1_animation_direction
+                    if player1_animation_state == 5:
+                        player1_animation_direction = -1
+                    if player1_animation_state < 3:
+                        player1_animation = "idle"
+                        player1_animation_state = 0
+                        player1_animation_direction = 1
+                        #messages.send_message("anim 0 idle 0 1|",client)
+                elif player1_animation == "land":
+                    player1_animation_state += player1_animation_direction
+                    if player1_animation_state == 8:
+                        player1_animation_direction = -1
+                    if player1_animation_state < 6:
+                        player1_animation = "idle"
+                        player1_animation_state = 0
+                        player1_animation_direction = 1
+                        #messages.send_message("anim 0 idle 0 1|",client)
+            if not game_data["players"][1]["frozen"]:
+                if player2_animation == "idle":
+                    player2_animation_state += player2_animation_direction
+                    if player2_animation_state == 2:
+                        player2_animation_direction = -1
+                    if player2_animation_state == 0:
+                        player2_animation_direction = 1
+                elif player2_animation == "jump":
+                    player2_animation_state += player2_animation_direction
+                    if player2_animation_state == 5:
+                        player2_animation_direction = -1
+                    if player2_animation_state < 3:
+                        player2_animation = "idle"
+                        player2_animation_state = 0
+                        player2_animation_direction = 1
+                        #messages.send_message("anim 1 idle 0 1|",client)
+                elif player2_animation == "land":
+                    player2_animation_state += player2_animation_direction
+                    if player2_animation_state == 8:
+                        player2_animation_direction = -1
+                    if player2_animation_state < 6:
+                        player2_animation = "idle"
+                        player2_animation_state = 0
+                        player2_animation_direction = 1
+                        #messages.send_message("anim 1 idle 0 1|",client)
             animation_counter = 0
 
         if frozen:
