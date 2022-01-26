@@ -18,14 +18,14 @@ tile_size = 76
 IP = 'localhost'
 port = 6789
 
-temp_ip = input("IP Address: ")
+temp_ip = input(f"IP Address ({IP}): ")
 if temp_ip!="":
     try:
         IP = int(temp_ip)
     except ValueError:
         IP = temp_ip
 
-temp_port = input("Port: ")
+temp_port = input(f"Port ({port}): ")
 if temp_port!="":
     port = int(temp_port)
 
@@ -342,25 +342,25 @@ while game_state != 0:
                     if not frozen:
                         if player_id == 0:
                             if game_data['players'][0]['facing'] == 0:
-                                new_x = game_data["players"][player_id]["x"]+50
+                                new_x = game_data["players"][player_id]["x"]+player_width
                                 player_y = game_data['players'][player_id]["y"]
-                                if (new_x + punch_range > game_data['players'][1]["x"]) and (player_y + 25 > game_data['players'][1]["y"] and player_y + 25 < game_data['players'][1]["y"] + 50):
+                                if ((new_x + punch_range > game_data['players'][1]["x"]) and (game_data['players'][1]["x"] > game_data["players"][player_id]["x"])) and ((player_y > game_data['players'][1]["y"] - player_height) and (player_y < game_data['players'][1]["y"] + player_height)):
                                     messages.send_message(f"punch 1 {punch_speed}|",client)
                             elif game_data['players'][0]['facing'] == 1:
                                 new_x = game_data["players"][player_id]["x"]
                                 player_y = game_data['players'][player_id]["y"]
-                                if (new_x - punch_range < game_data['players'][1]["x"]) and (player_y + 25 > game_data['players'][1]["y"] and player_y + 25 < game_data['players'][1]["y"] + 50):
+                                if ((new_x - punch_range < game_data['players'][1]["x"]+player_width) and (game_data['players'][1]["x"] < game_data["players"][player_id]["x"])) and ((player_y > game_data['players'][1]["y"] - player_height) and (player_y < game_data['players'][1]["y"] + player_height)):
                                     messages.send_message(f"punch 1 -{punch_speed}|",client)
                         if player_id == 1:
                             if game_data['players'][1]['facing'] == 0:
-                                new_x = (game_data["players"][player_id]["x"])+50
+                                new_x = (game_data["players"][player_id]["x"])+player_width
                                 player_y = game_data['players'][player_id]["y"]
-                                if (new_x + punch_range > game_data['players'][0]["x"]) and (player_y + 25 > game_data['players'][0]["y"] and player_y + 25 < game_data['players'][0]["y"] + 50):
+                                if ((new_x + punch_range > game_data['players'][0]["x"]) and (game_data['players'][0]["x"] > game_data["players"][player_id]["x"])) and ((player_y > game_data['players'][0]["y"] - player_height) and (player_y < game_data['players'][0]["y"] + player_height)):
                                     messages.send_message(f"punch 0 {punch_speed}|",client)
                             elif game_data['players'][1]['facing'] == 1:
                                 new_x = game_data["players"][player_id]["x"]
                                 player_y = game_data['players'][player_id]["y"]
-                                if (new_x - punch_range < game_data['players'][0]["x"]) and (player_y + 25 > game_data['players'][0]["y"] and player_y + 25 < game_data['players'][0]["y"] + 50):
+                                if ((new_x - punch_range < game_data['players'][0]["x"]+player_width) and (game_data['players'][0]["x"] < game_data["players"][player_id]["x"])) and ((player_y > game_data['players'][0]["y"] - player_height) and (player_y < game_data['players'][0]["y"] + player_height)):
                                     messages.send_message(f"punch 0 -{punch_speed}|",client)
 
         keys = pygame.key.get_pressed()

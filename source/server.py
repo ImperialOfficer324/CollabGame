@@ -10,29 +10,29 @@ port = 6789
 address = ('localhost',6789)
 max_size = 1000
 
-temp_ip = input("IP Address: ")
+temp_ip = input(f"IP Address ({IP}): ")
 if temp_ip!="":
     try:
         IP = int(temp_ip)
     except ValueError:
         IP = temp_ip
 
-temp_port = input("Port: ")
+temp_port = input(f"Port ({port}): ")
 if temp_port!="":
     port = int(temp_port)
 
 player1_skin = "player1"
-temp = input("Player 1 Appearance: ")
+temp = input(f"Player 1 Appearance ({player1_skin}): ")
 if temp+'.png' in os.listdir("assets/players/"):
     player1_skin = temp
 
 player2_skin = "player2"
-temp = input("Player 2 Appearance: ")
+temp = input(f"Player 2 Appearance ({player2_skin}): ")
 if temp+'.png' in os.listdir("assets/players/"):
     player2_skin = temp
 
 level = "level1"
-temp = input("Level: ")
+temp = input(f"Level ({level}): ")
 if temp+'.json' in os.listdir("levels/"):
     level = temp
 
