@@ -79,6 +79,13 @@ freeze_vfx_2.blit(freeze_vfx_img, (0, 0), (50, 0, 50, 50))
 freeze_vfx.append(freeze_vfx_1)
 freeze_vfx.append(freeze_vfx_2)
 
+# all five frames of the attack are in this image
+freeze_attack = pygame.transform.scale(pygame.image.load("assets/misc/attack_freeze.png"),(175*2,70))
+
+# creating a list allows us to have as many freezes as we need on the screen. When they're gone, they simply get removed from the list
+# this information is organized as [x,y,state]
+freezes = []
+
 def display_tiles():
     window.fill((0,0,0));
     for row_count,row in enumerate(game_data["level"]["grid"]):
@@ -208,6 +215,22 @@ def display_players():
         if game_data["players"][1]["frozen"]:
             window.blit(freeze_vfx[game_data["players"][1]["facing"]],(int(game_data["players"][1]["x"])-x_offset,int(game_data["players"][1]["y"])-y_offset))
 
+freezes_counter = 0
+def update_freezes():
+    global freezes_counter
+    freezes_counter+=1
+    img = pygame.Surface((70, 70))
+    img.set_colorkey((0,0,0))
+    for fr in freezes:
+        img.blit(freeze_attack, (0, 0), (fr[2] * 70, 0, 70, 70))
+        window.blit(img,(fr[0]-x_offset,fr[1]-y_offset))
+        if freezes_counter>anim_speed//2:
+            fr[2]+=1
+            if fr[2]>4:
+                freezes.remove(fr)
+    if freezes_counter>anim_speed//2:
+        freezes_counter = 0
+
 def listen_to_server(client):
     global player1_animation
     global player2_animation
@@ -220,12 +243,13 @@ def listen_to_server(client):
     global winner
     global frozen
     global freeze_counter
+    global freezes
     while game_state:
         msg = client.recv(max_size)
         if(str(msg,"utf-8") == "quit"):
             print("quit")
             game_state = 0
-        game_data,anim_data,win_data = messages.parse_message(msg,game_data)
+        game_data,anim_data,win_data, freeze_data = messages.parse_message(msg,game_data)
         if anim_data[0]==1:
             if anim_data[1]==0:
                 player1_animation = game_data["players"][0]["anim"][0]
@@ -243,6 +267,11 @@ def listen_to_server(client):
             # print("I got frozen")
             frozen = 1
             freeze_counter = 0
+        
+        print(freeze_data[0])
+        if freeze_data[0]==1: # if we need to play the animation
+            print("initiating freeze")
+            freezes.append([freeze_data[1],freeze_data[2],0])
 
 server_listener = threading.Thread(target=lambda:listen_to_server(client))
 server_listener.start()
@@ -290,6 +319,8 @@ while game_state != 0:
                             player_y_vel -= 10
                 if event.key == pygame.K_DOWN or event.key == pygame.K_s:
                     if not frozen:
+                        messages.send_message(f'fr_attack {game_data["players"][player_id]["x"]-10} {game_data["players"][player_id]["y"]-10}|',client)
+                        freezes.append([game_data["players"][player_id]["x"]-10,game_data["players"][player_id]["y"]-10,0])
                         if player_id == 0:
                             if abs((game_data['players'][0]["x"]+25) - (game_data['players'][1]["x"])+25) <= player_width*1.5 and abs((game_data['players'][0]["y"]+25) - (game_data['players'][1]["y"])+25) <= player_width*1.5:
                                 #print("froze a player 1")
@@ -477,6 +508,7 @@ while game_state != 0:
 
         display_tiles()
         display_players()
+        update_freezes()
         pygame.display.update()
 
 display_win_screen()
