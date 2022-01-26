@@ -12,7 +12,6 @@ WIDTH = 1000
 HEIGHT = 700
 
 tile_size = 76
-player_move_speed = 3
 
 #setup connection with server
 # server_address=("localhost", 6789)
@@ -107,7 +106,15 @@ num_jumps = 3
 jumps = num_jumps
 
 player_y_vel = 0
+game_data["players"][player_id]["x_vel"] = 0
 gravity_counter = 0
+friction_counter = 0
+friction_speed = 8
+max_x_vel = 7
+x_vel_change = 1
+
+punch_range = 50
+punch_speed = 10
 
 winner = 0
 
@@ -302,7 +309,7 @@ while game_state != 0:
                 client.close()
                 quit()
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE or event.key == pygame.K_UP or event.key == pygame.K_w:
+                if event.key == pygame.K_UP or event.key == pygame.K_w:
                     if not frozen:
                         if jumps>0:
                             jumps-=1
@@ -331,52 +338,79 @@ while game_state != 0:
                                 #print("froze a player 0")
                                 messages.send_message(f"freeze 0 1|",client)
                                 game_data['players'][0]["frozen"] = 1;
-
+                if event.key == pygame.K_SPACE:
+                    if not frozen:
+                        if player_id == 0:
+                            if game_data['players'][0]['facing'] == 0:
+                                new_x = game_data["players"][player_id]["x"]+50
+                                player_y = game_data['players'][player_id]["y"]
+                                if (new_x + punch_range > game_data['players'][1]["x"]) and (player_y + 25 > game_data['players'][1]["y"] and player_y + 25 < game_data['players'][1]["y"] + 50):
+                                    messages.send_message(f"punch 1 {punch_speed}|",client)
+                            elif game_data['players'][0]['facing'] == 1:
+                                new_x = game_data["players"][player_id]["x"]
+                                player_y = game_data['players'][player_id]["y"]
+                                if (new_x - punch_range < game_data['players'][1]["x"]) and (player_y + 25 > game_data['players'][1]["y"] and player_y + 25 < game_data['players'][1]["y"] + 50):
+                                    messages.send_message(f"punch 1 -{punch_speed}|",client)
+                        if player_id == 1:
+                            if game_data['players'][1]['facing'] == 0:
+                                new_x = (game_data["players"][player_id]["x"])+50
+                                player_y = game_data['players'][player_id]["y"]
+                                if (new_x + punch_range > game_data['players'][0]["x"]) and (player_y + 25 > game_data['players'][0]["y"] and player_y + 25 < game_data['players'][0]["y"] + 50):
+                                    messages.send_message(f"punch 0 {punch_speed}|",client)
+                            elif game_data['players'][1]['facing'] == 1:
+                                new_x = game_data["players"][player_id]["x"]
+                                player_y = game_data['players'][player_id]["y"]
+                                if (new_x - punch_range < game_data['players'][0]["x"]) and (player_y + 25 > game_data['players'][0]["y"] and player_y + 25 < game_data['players'][0]["y"] + 50):
+                                    messages.send_message(f"punch 0 -{punch_speed}|",client)
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             if not frozen:
-                new_x = (game_data["players"][player_id]["x"]+player_move_speed)+50
-                player_y = game_data['players'][player_id]["y"]
-
-                if new_x<(len(game_data["level"]['grid'][0])*tile_size):
-                    tile_1 = game_data['level']['grid'][game_data['players'][player_id]["y"]//tile_size][new_x//tile_size]
-                    tile_2 = 0
-                    if player_y % tile_size != 0:
-                        tile_2 = game_data['level']["grid"][(game_data["players"][player_id]["y"]+50)//tile_size][new_x//tile_size]
-
-                    if tile_1 != 1 and tile_2 != 1:
-                        game_data["players"][player_id]["x"]+=player_move_speed
-                        messages.send_message(f"move {player_id} {player_move_speed}|",client)
-                if player_id == 0:
-                    game_data["players"][player_id]["facing"] = 0
-                if player_id == 1:
-                    game_data["players"][player_id]["facing"] = 0
-                messages.send_message(f"face {player_id} 0 |",client)
+                if game_data["players"][player_id]["x_vel"] < max_x_vel:
+                    game_data["players"][player_id]["x_vel"] += x_vel_change
+                # new_x = (game_data["players"][player_id]["x"]+player_move_speed)+50
+                # player_y = game_data['players'][player_id]["y"]
+                #
+                # if new_x<(len(game_data["level"]['grid'][0])*tile_size):
+                #     tile_1 = game_data['level']['grid'][game_data['players'][player_id]["y"]//tile_size][new_x//tile_size]
+                #     tile_2 = 0
+                #     if player_y % tile_size != 0:
+                #         tile_2 = game_data['level']["grid"][(game_data["players"][player_id]["y"]+50)//tile_size][new_x//tile_size]
+                #
+                #     if tile_1 != 1 and tile_2 != 1:
+                #         game_data["players"][player_id]["x"]+=player_move_speed
+                #         messages.send_message(f"move {player_id} {player_move_speed}|",client)
+                # if player_id == 0:
+                #     game_data["players"][player_id]["facing"] = 0
+                # if player_id == 1:
+                #     game_data["players"][player_id]["facing"] = 0
+                # messages.send_message(f"face {player_id} 0 |",client)
         elif keys[pygame.K_LEFT] or keys[pygame.K_a]:
             if not frozen:
-                new_x = (game_data["players"][player_id]["x"]-player_move_speed)
-                if new_x>0:
-                    player_y = game_data['players'][player_id]["y"]
-
-                    tile_1 = game_data['level']['grid'][game_data['players'][player_id]["y"]//tile_size][new_x//tile_size]
-                    tile_2 = 0
-                    if player_y % tile_size != 0:
-                        tile_2 = game_data['level']["grid"][(game_data["players"][player_id]["y"]+50)//tile_size][new_x//tile_size]
-
-                    if tile_1 != 1 and tile_2 != 1:
-                        game_data["players"][player_id]["x"]-=player_move_speed
-                        messages.send_message(f"move {player_id} -{player_move_speed}|",client)
-                        if tile_1==2 or tile_2==2:
-                            print("reached the end")
-                            messages.send_message(f"win {player_id}|",client)
-                            winner = player_id
-                            game_state = 0
-                        if player_id == 0:
-                            game_data["players"][player_id]["facing"] = 1
-                        if player_id == 1:
-                            game_data["players"][player_id]["facing"] = 1
-                        messages.send_message(f"face {player_id} 1 |",client)
+                if game_data["players"][player_id]["x_vel"] > -max_x_vel:
+                    game_data["players"][player_id]["x_vel"] -= x_vel_change
+                # new_x = (game_data["players"][player_id]["x"]-player_move_speed)
+                # if new_x>0:
+                #     player_y = game_data['players'][player_id]["y"]
+                #
+                #     tile_1 = game_data['level']['grid'][game_data['players'][player_id]["y"]//tile_size][new_x//tile_size]
+                #     tile_2 = 0
+                #     if player_y % tile_size != 0:
+                #         tile_2 = game_data['level']["grid"][(game_data["players"][player_id]["y"]+50)//tile_size][new_x//tile_size]
+                #
+                #     if tile_1 != 1 and tile_2 != 1:
+                #         game_data["players"][player_id]["x"]-=player_move_speed
+                #         messages.send_message(f"move {player_id} -{player_move_speed}|",client)
+                #         if tile_1==2 or tile_2==2:
+                #             print("reached the end")
+                #             messages.send_message(f"win {player_id}|",client)
+                #             winner = player_id
+                #             game_state = 0
+                #         if player_id == 0:
+                #             game_data["players"][player_id]["facing"] = 1
+                #         if player_id == 1:
+                #             game_data["players"][player_id]["facing"] = 1
+                #         messages.send_message(f"face {player_id} 1 |",client)
         # apply gravity to player
         if player_y_vel>0:
             new_y = (game_data["players"][player_id]["y"]+player_y_vel)+50
@@ -443,6 +477,96 @@ while game_state != 0:
             gravity_counter = 0
             player_y_vel+=1
             # player_y_vel = 1
+
+
+        if game_data["players"][player_id]["x_vel"]>0:
+            new_x = (game_data["players"][player_id]["x"]+game_data["players"][player_id]["x_vel"])+50
+
+            player_y = game_data['players'][player_id]["y"]
+            if new_x<(len(game_data["level"]['grid'][0])*tile_size):
+                tile_1 = game_data['level']['grid'][game_data['players'][player_id]["y"]//tile_size][new_x//tile_size]
+                tile_2 = 0
+                if player_y % tile_size != 0:
+                    tile_2 = game_data['level']["grid"][(game_data["players"][player_id]["y"]+50)//tile_size][new_x//tile_size]
+
+                if tile_1 != 1 and tile_2 != 1:
+                    game_data["players"][player_id]["x"]+=game_data["players"][player_id]["x_vel"]
+                    messages.send_message(f'move {player_id} {game_data["players"][player_id]["x_vel"]}|',client)
+                else:
+                    game_data["players"][player_id]["x_vel"] = 0
+            if tile_1==2 or tile_2==2:
+                print("reached the end")
+                messages.send_message(f"win {player_id}|",client)
+                winner = player_id
+                game_state = 0
+            if player_id == 0:
+                game_data["players"][player_id]["facing"] = 0
+            if player_id == 1:
+                game_data["players"][player_id]["facing"] = 0
+            messages.send_message(f"face {player_id} 0 |",client)
+
+
+        if game_data["players"][player_id]["x_vel"]<0:
+            new_x = (game_data["players"][player_id]["x"]+game_data["players"][player_id]["x_vel"])
+
+            player_y = game_data['players'][player_id]["y"]
+            if new_x>0:
+                tile_1 = game_data['level']['grid'][game_data['players'][player_id]["y"]//tile_size][new_x//tile_size]
+                tile_2 = 0
+                if player_y % tile_size != 0:
+                    tile_2 = game_data['level']["grid"][(game_data["players"][player_id]["y"]+50)//tile_size][new_x//tile_size]
+
+                if tile_1 != 1 and tile_2 != 1:
+                    game_data["players"][player_id]["x"]+=game_data["players"][player_id]["x_vel"]
+                    messages.send_message(f'move {player_id} {game_data["players"][player_id]["x_vel"]}|',client)
+                else:
+                    game_data["players"][player_id]["x_vel"] = 0
+            if tile_1==2 or tile_2==2:
+                print("reached the end")
+                messages.send_message(f"win {player_id}|",client)
+                winner = player_id
+                game_state = 0
+            if player_id == 0:
+                game_data["players"][player_id]["facing"] = 1
+            if player_id == 1:
+                game_data["players"][player_id]["facing"] = 1
+            messages.send_message(f"face {player_id} 1 |",client)
+
+
+            # new_y = (game_data["players"][player_id]["x"]+game_data["players"][player_id]["x_vel"])
+            # player_x = game_data['players'][player_id]["x"]
+            #
+            # player_y = game_data['players'][player_id]["y"]
+            #
+            # tile_1 = game_data['level']['grid'][game_data['players'][player_id]["y"]//tile_size][new_x//tile_size]
+            # tile_2 = 0
+            # if player_y % tile_size != 0:
+            #     tile_2 = game_data['level']["grid"][(game_data["players"][player_id]["y"]+50)//tile_size][new_x//tile_size]
+            #
+            # if tile_1 != 1 and tile_2 != 1:
+            #     game_data["players"][player_id]["x"]+=game_data["players"][player_id]["x_vel"]
+            #     messages.send_message(f"move {player_id} +{game_data["players"][player_id]["x_vel"]}|",client)
+            # else:
+            #     player_y_vel = 0
+            #     if tile_1==2 or tile_2==2:
+            #         print("reached the end")
+            #         messages.send_message(f"win {player_id}|",client)
+            #         winner = player_id
+            #         game_state = 0
+            #     if player_id == 0:
+            #         game_data["players"][player_id]["facing"] = 1
+            #     if player_id == 1:
+            #         game_data["players"][player_id]["facing"] = 1
+            #     messages.send_message(f"face {player_id} 1 |",client)
+
+        friction_counter+=1
+        if friction_counter>=friction_speed:
+            friction_counter = 0
+            if game_data["players"][player_id]["x_vel"] > 0:
+                game_data["players"][player_id]["x_vel"]-=1
+            elif game_data["players"][player_id]["x_vel"] < 0:
+                game_data["players"][player_id]["x_vel"]+=1
+
 
         animation_counter += 1
         if animation_counter == anim_speed:
