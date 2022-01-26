@@ -274,7 +274,7 @@ def listen_to_server(client):
             # print("I got frozen")
             frozen = 1
             freeze_counter = 0
-        
+
         # print(freeze_data[0])
         if freeze_data[0]==1: # if we need to play the animation
             print("initiating freeze")
@@ -329,12 +329,12 @@ while game_state != 0:
                         messages.send_message(f'fr_attack {game_data["players"][player_id]["x"]-10} {game_data["players"][player_id]["y"]-10}|',client)
                         freezes.append([game_data["players"][player_id]["x"]-10,game_data["players"][player_id]["y"]-10,0])
                         if player_id == 0:
-                            if abs((game_data['players'][0]["x"]+25) - (game_data['players'][1]["x"])+25) <= player_width*1.5 and abs((game_data['players'][0]["y"]+25) - (game_data['players'][1]["y"])+25) <= player_width*1.5:
+                            if (abs((game_data['players'][0]["x"]) - (game_data['players'][1]["x"])) <= player_width*1.5) and (abs((game_data['players'][0]["y"]) - (game_data['players'][1]["y"])) <= player_height*1.5):
                                 #print("froze a player 1")
                                 messages.send_message(f"freeze 1 1|",client)
                                 game_data['players'][1]["frozen"] = 1;
                         if player_id == 1:
-                            if abs((game_data['players'][1]["x"]+25) - (game_data['players'][0]["x"])+25) <= player_width*1.5 and abs((game_data['players'][1]["y"]+25) - (game_data['players'][0]["y"])+25) <= player_width*1.5:
+                            if (abs((game_data['players'][1]["x"]) - (game_data['players'][0]["x"])) <= player_width*1.5) and (abs((game_data['players'][1]["y"]) - (game_data['players'][0]["y"])) <= player_height*1.5):
                                 #print("froze a player 0")
                                 messages.send_message(f"freeze 0 1|",client)
                                 game_data['players'][0]["frozen"] = 1;
