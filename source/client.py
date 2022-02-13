@@ -31,7 +31,7 @@ if temp_port!="":
 
 server_address = (IP,port)
 
-max_size=10000
+max_size=100000
 client=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(server_address)
 #data=client.recv(max_size)
