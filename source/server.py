@@ -63,8 +63,8 @@ def load_server(address,max_size):
 
     gamedata = {
         "level":level,
-        "players":[{"x":level["player_x"],"y":level["player_y"],"image":f"assets/players/{player1_skin}.png","y_vel":0,"x_vel":0,"anim":"idle","facing":0,"frozen":0},
-        {"x":level["player_x"],"y":level["player_y"],"image":f"assets/players/{player2_skin}.png","y_vel":0,"x_vel":0,"anim":"idle","facing":0,"frozen":0}]
+        "players":[{"x":level["player_x"],"y":level["player_y"],"image":f"assets/players/{player1_skin}.png","y_vel":0,"x_vel":0,"anim":"idle","facing":0,"frozen":0,"countdown":5},
+        {"x":level["player_x"],"y":level["player_y"],"image":f"assets/players/{player2_skin}.png","y_vel":0,"x_vel":0,"anim":"idle","facing":0,"frozen":0, "countdown":5}]
     }
     print(type(gamedata))
 
@@ -128,6 +128,13 @@ def load_server(address,max_size):
     client2.sendall(one.encode())
 
     time.sleep(0.1);
+
+    countdown = 8
+    while countdown > 0:
+        time.sleep(1)
+        messages.send_message("countdown|",client1)
+        messages.send_message("countdown|",client2)
+        countdown-=1
 
     client1_thread.start()
     client2_thread.start()
