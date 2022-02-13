@@ -63,8 +63,8 @@ tiles = [pygame.transform.scale(pygame.image.load("assets/tiles/sky.png"),(tile_
         pygame.transform.scale(pygame.image.load("assets/tiles/ground.png"),(tile_size,tile_size)),
         pygame.transform.scale(pygame.image.load("assets/tiles/gate.png"),(tile_size,tile_size))]
 
-players = [pygame.transform.scale(pygame.image.load(game_data["players"][0]["image"]),(450,100)),
-            pygame.transform.scale(pygame.image.load(game_data["players"][1]["image"]),(450,100))]
+players = [pygame.transform.scale(pygame.image.load(game_data["players"][0]["image"]),(650,100)),
+            pygame.transform.scale(pygame.image.load(game_data["players"][1]["image"]),(650,100))]
 
 freeze_vfx_img = pygame.transform.scale(pygame.image.load("assets/misc/freeze.png"),(100,50))
 freeze_vfx = []
@@ -369,27 +369,51 @@ while game_state != 0:
                 if event.key == pygame.K_SPACE:
                     if not frozen:
                         if player_id == 0:
+                            player1_animation = "punch"
+                            player1_animation_state = 9
+                            player1_animation_direction = 1
+                            messages.send_message("anim 0 punch 9 1|",client)
                             if game_data['players'][0]['facing'] == 0:
                                 new_x = game_data["players"][player_id]["x"]+player_width
                                 player_y = game_data['players'][player_id]["y"]
                                 if ((new_x + punch_range > game_data['players'][1]["x"]) and (game_data['players'][1]["x"] > game_data["players"][player_id]["x"])) and ((player_y > game_data['players'][1]["y"] - player_height) and (player_y < game_data['players'][1]["y"] + player_height)):
                                     messages.send_message(f"punch 1 {punch_speed}|",client)
+                                    player2_animation = "hit"
+                                    player2_animation_state = 12
+                                    player2_animation_direction = 1
+                                    messages.send_message("anim 1 hit 12 1|",client)
                             elif game_data['players'][0]['facing'] == 1:
                                 new_x = game_data["players"][player_id]["x"]
                                 player_y = game_data['players'][player_id]["y"]
                                 if ((new_x - punch_range < game_data['players'][1]["x"]+player_width) and (game_data['players'][1]["x"] < game_data["players"][player_id]["x"])) and ((player_y > game_data['players'][1]["y"] - player_height) and (player_y < game_data['players'][1]["y"] + player_height)):
                                     messages.send_message(f"punch 1 -{punch_speed}|",client)
+                                    player2_animation = "hit"
+                                    player2_animation_state = 12
+                                    player2_animation_direction = 1
+                                    messages.send_message("anim 1 hit 12 1|",client)
                         if player_id == 1:
+                            player2_animation = "punch"
+                            player2_animation_state = 9
+                            player2_animation_direction = 1
+                            messages.send_message("anim 1 punch 9 1|",client)
                             if game_data['players'][1]['facing'] == 0:
                                 new_x = (game_data["players"][player_id]["x"])+player_width
                                 player_y = game_data['players'][player_id]["y"]
                                 if ((new_x + punch_range > game_data['players'][0]["x"]) and (game_data['players'][0]["x"] > game_data["players"][player_id]["x"])) and ((player_y > game_data['players'][0]["y"] - player_height) and (player_y < game_data['players'][0]["y"] + player_height)):
                                     messages.send_message(f"punch 0 {punch_speed}|",client)
+                                    player1_animation = "hit"
+                                    player1_animation_state = 12
+                                    player1_animation_direction = 1
+                                    messages.send_message("anim 0 hit 12 1|",client)
                             elif game_data['players'][1]['facing'] == 1:
                                 new_x = game_data["players"][player_id]["x"]
                                 player_y = game_data['players'][player_id]["y"]
                                 if ((new_x - punch_range < game_data['players'][0]["x"]+player_width) and (game_data['players'][0]["x"] < game_data["players"][player_id]["x"])) and ((player_y > game_data['players'][0]["y"] - player_height) and (player_y < game_data['players'][0]["y"] + player_height)):
                                     messages.send_message(f"punch 0 -{punch_speed}|",client)
+                                    player1_animation = "hit"
+                                    player1_animation_state = 12
+                                    player1_animation_direction = 1
+                                    messages.send_message("anim 0 hit 12 1|",client)
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
@@ -623,6 +647,18 @@ while game_state != 0:
                         player1_animation_state = 0
                         player1_animation_direction = 1
                         #messages.send_message("anim 0 idle 0 1|",client)
+                elif player1_animation == "punch":
+                    player1_animation_state += player1_animation_direction
+                    if player1_animation_state == 11:
+                        player1_animation_direction = -1
+                    if player1_animation_state < 9:
+                        player1_animation = "idle"
+                        player1_animation_state = 0
+                        player1_animation_direction = 1
+                elif player1_animation == "hit":
+                    player1_animation = "idle"
+                    player1_animation_state = 0
+                    player1_animation_direction = 1
             if not game_data["players"][1]["frozen"]:
                 if player2_animation == "idle":
                     player2_animation_state += player2_animation_direction
@@ -648,6 +684,18 @@ while game_state != 0:
                         player2_animation_state = 0
                         player2_animation_direction = 1
                         #messages.send_message("anim 1 idle 0 1|",client)
+                elif player2_animation == "punch":
+                    player2_animation_state += player2_animation_direction
+                    if player2_animation_state == 11:
+                        player2_animation_direction = -1
+                    if player2_animation_state < 9:
+                        player2_animation = "idle"
+                        player2_animation_state = 0
+                        player2_animation_direction = 1
+                elif player2_animation == "hit":
+                    player2_animation = "idle"
+                    player2_animation_state = 0
+                    player2_animation_direction = 1
             animation_counter = 0
 
         if frozen:
