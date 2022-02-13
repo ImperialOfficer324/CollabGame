@@ -70,4 +70,6 @@ def _parse_message(message,game_data):
         player_id = int(message.split(" ")[0])
         val = int(message.split(" ")[1])
         game_data["players"][player_id]["x_vel"] += val
+    elif "countdown" in message:
+        game_data["countdown"]-=1
     return game_data, [anim_changed,player_id], [win,player_id], [is_freeze,freeze_x,freeze_y]

@@ -37,7 +37,7 @@ client.connect(server_address)
 #data=client.recv(max_size)
 
 #game variables
-game_state = 1
+game_state = -1
 #player_id = 0
 gamedata_string = str(client.recv(max_size), "utf-8")
 game_data = json.loads(gamedata_string)
@@ -199,7 +199,6 @@ frozen = 0
 freeze_counter = 0
 freeze_duration = 30
 
-
 def display_players():
     p1 = pygame.Surface((50, 50))
     p1.set_colorkey((0,0,0))
@@ -280,11 +279,24 @@ def listen_to_server(client):
             print("initiating freeze")
             freezes.append([freeze_data[1],freeze_data[2],0])
 
+game_data["countdown"] = 7
 server_listener = threading.Thread(target=lambda:listen_to_server(client))
 server_listener.start()
 
 player_width = 50
 player_height = 50
+
+countdown_font = pygame.font.Font("assets/fonts/mainfont.ttf",120)
+
+def print_text(text,font,color,coordinates,center = False,anti_alias = True):
+    text_surface = font.render(text,anti_alias,color)
+    if center:
+        text_rect = text_surface.get_rect()
+        text_rect.center = (coordinates)
+        window.blit(text_surface,text_rect)
+    else:
+        window.blit(text_surface,coordinates)
+
 level_width = len(game_data["level"]['grid'][0])*tile_size
 level_height = len(game_data["level"]['grid'])*tile_size
 if level_width >= WIDTH:
@@ -298,7 +310,23 @@ max_char_y = level_height - player_height
 
 while game_state != 0:
     clock.tick(60)
-    if game_state == 1: # main game loop
+    if game_state == -1: # game_data["countdown"]
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+        display_tiles()
+        display_players()
+        if game_data["countdown"] == -1:
+            game_state = 1
+        elif game_data["countdown"] == 0:
+            print_text("GO!",countdown_font,(255,255,255),(WIDTH//2,HEIGHT//2),True,False)
+        elif game_data["countdown"] > 5:
+            print_text("Ready!",countdown_font,(255,255,255),(WIDTH//2,HEIGHT//2),True,False)
+        else:
+            print_text(str(game_data["countdown"]),countdown_font,(255,255,255),(WIDTH//2,HEIGHT//2),True,False)
+        pygame.display.update()
+    elif game_state == 1: # main game loop
         x_offset = int(((int(game_data["players"][player_id]["x"])) / max_char_x) * max_x_offset)
         y_offset = int(((int(game_data["players"][player_id]["y"])) / max_char_y) * max_y_offset)
 
