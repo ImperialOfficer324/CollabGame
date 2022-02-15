@@ -164,10 +164,10 @@ def display_win_screen():
     counter = 0
     p1 = pygame.Surface((250, 250))
     p1.set_colorkey((0,0,0))
-    p1.blit(pygame.transform.scale(players[1],(250*9,500)), (0, 0), (0, 0, 250, 250))
+    p1.blit(pygame.transform.scale(players[1],(250*13,500)), (0, 0), (0, 0, 250, 250))
     p0 = pygame.Surface((250, 250))
     p0.set_colorkey((0,0,0))
-    p0.blit(pygame.transform.scale(players[0],(250*9,500)), (0, 0), (0, 0, 250, 250))
+    p0.blit(pygame.transform.scale(players[0],(250*13,500)), (0, 0), (0, 0, 250, 250))
     while display_winner:
         clock.tick(60)
         window.fill((0,0,0))

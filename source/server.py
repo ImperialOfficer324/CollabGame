@@ -119,7 +119,7 @@ def load_server(address,max_size):
     client1.sendall(bytes(gamedata_string,"utf-8"))
     client2.sendall(bytes(gamedata_string,"utf-8"))
 
-    time.sleep(0.1);
+    time.sleep(0.2);
 
     client1_thread = threading.Thread(target = lambda:listen_to_client(client1,client2,0))
     client2_thread = threading.Thread(target = lambda:listen_to_client(client2,client1,1))
