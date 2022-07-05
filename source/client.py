@@ -276,7 +276,6 @@ def listen_to_server(client):
 
         # print(freeze_data[0])
         if freeze_data[0]==1: # if we need to play the animation
-            print("initiating freeze")
             freezes.append([freeze_data[1],freeze_data[2],0])
 
 game_data["countdown"] = 7
