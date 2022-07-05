@@ -63,8 +63,8 @@ tiles = [pygame.transform.scale(pygame.image.load("assets/tiles/sky.png"),(tile_
         pygame.transform.scale(pygame.image.load("assets/tiles/ground.png"),(tile_size,tile_size)),
         pygame.transform.scale(pygame.image.load("assets/tiles/gate.png"),(tile_size,tile_size))]
 
-players = [pygame.transform.scale(pygame.image.load(game_data["players"][0]["image"]),(650,100)),
-            pygame.transform.scale(pygame.image.load(game_data["players"][1]["image"]),(650,100))]
+players = [pygame.transform.scale(pygame.image.load(game_data["players"][0]["image"]),(1170,180)),
+            pygame.transform.scale(pygame.image.load(game_data["players"][1]["image"]),(1170,180))]
 
 freeze_vfx_img = pygame.transform.scale(pygame.image.load("assets/misc/freeze.png"),(100,50))
 freeze_vfx = []
@@ -200,26 +200,26 @@ freeze_counter = 0
 freeze_duration = 30
 
 def display_players():
-    p1 = pygame.Surface((50, 50))
+    p1 = pygame.Surface((90, 90))
     p1.set_colorkey((0,0,0))
-    p1.blit(players[1], (0, 0), ((player2_animation_state) * 50, (game_data["players"][1]["facing"]) * 50, 50, 50))
-    p0 = pygame.Surface((50, 50))
+    p1.blit(players[1], (0, 0), ((player2_animation_state) * 90, (game_data["players"][1]["facing"]) * 90, 90, 90))
+    p0 = pygame.Surface((90, 90))
     p0.set_colorkey((0,0,0))
-    p0.blit(players[0], (0, 0), ((player1_animation_state) * 50, (game_data["players"][0]["facing"]) * 50, 50, 50))
+    p0.blit(players[0], (0, 0), ((player1_animation_state) * 90, (game_data["players"][0]["facing"]) * 90, 90, 90))
     if player_id == 0:
-        window.blit(p1,(int(game_data["players"][1]["x"])-x_offset,int(game_data["players"][1]["y"])-y_offset))
+        window.blit(p1,(int(game_data["players"][1]["x"])-x_offset-20,int(game_data["players"][1]["y"])-y_offset-20))
         if game_data["players"][1]["frozen"]:
-            window.blit(freeze_vfx[game_data["players"][1]["facing"]],(int(game_data["players"][1]["x"])-x_offset,int(game_data["players"][1]["y"])-y_offset))
-        window.blit(p0,(int(game_data["players"][0]["x"])-x_offset,int(game_data["players"][0]["y"])-y_offset))
+            window.blit(freeze_vfx[game_data["players"][1]["facing"]],(int(game_data["players"][1]["x"])-x_offset-20,int(game_data["players"][1]["y"])-y_offset-20))
+        window.blit(p0,(int(game_data["players"][0]["x"])-x_offset-20,int(game_data["players"][0]["y"])-y_offset-20))
         if game_data["players"][0]["frozen"]:
-            window.blit(freeze_vfx[game_data["players"][0]["facing"]],(int(game_data["players"][0]["x"])-x_offset,int(game_data["players"][0]["y"])-y_offset))
+            window.blit(freeze_vfx[game_data["players"][0]["facing"]],(int(game_data["players"][0]["x"])-x_offset-20,int(game_data["players"][0]["y"])-y_offset-20))
     else:
-        window.blit(p0,(int(game_data["players"][0]["x"])-x_offset,int(game_data["players"][0]["y"])-y_offset))
+        window.blit(p0,(int(game_data["players"][0]["x"])-x_offset-20,int(game_data["players"][0]["y"])-y_offset-20))
         if game_data["players"][0]["frozen"]:
-            window.blit(freeze_vfx[game_data["players"][0]["facing"]],(int(game_data["players"][0]["x"])-x_offset,int(game_data["players"][0]["y"])-y_offset))
-        window.blit(p1,(int(game_data["players"][1]["x"])-x_offset,int(game_data["players"][1]["y"])-y_offset))
+            window.blit(freeze_vfx[game_data["players"][0]["facing"]],(int(game_data["players"][0]["x"])-x_offset-20,int(game_data["players"][0]["y"])-y_offset-20))
+        window.blit(p1,(int(game_data["players"][1]["x"])-x_offset-20,int(game_data["players"][1]["y"])-y_offset-20))
         if game_data["players"][1]["frozen"]:
-            window.blit(freeze_vfx[game_data["players"][1]["facing"]],(int(game_data["players"][1]["x"])-x_offset,int(game_data["players"][1]["y"])-y_offset))
+            window.blit(freeze_vfx[game_data["players"][1]["facing"]],(int(game_data["players"][1]["x"])-x_offset-20,int(game_data["players"][1]["y"])-y_offset-20))
 
 freezes_counter = 0
 def update_freezes():
