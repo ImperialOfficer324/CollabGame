@@ -31,7 +31,7 @@ if temp_port!="":
 
 server_address = (IP,port)
 
-max_size=100000
+max_size=1000000
 client=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(server_address)
 #data=client.recv(max_size)
@@ -40,9 +40,10 @@ client.connect(server_address)
 game_state = -1
 #player_id = 0
 gamedata_string = str(client.recv(max_size), "utf-8")
+print(gamedata_string)
 game_data = json.loads(gamedata_string)
 #time.sleep(0.1)
-print(game_data)
+#print(game_data)
 print(type(game_data["players"]))
 
 x_offset = 0
@@ -55,7 +56,7 @@ clock = pygame.time.Clock()
 #NOTE: change title later
 pygame.display.set_caption("Collaboration Game")
 
-player_id = int(client.recv(28).decode().split("|")[0])
+player_id = int(client.recv(28).decode().split("|")[1])
 
 time.sleep(0.5)
 

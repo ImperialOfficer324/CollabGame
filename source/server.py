@@ -1,3 +1,4 @@
+from ctypes import sizeof
 import socket
 import json
 import threading
@@ -59,7 +60,6 @@ def load_server(address,max_size):
         for line in level_file:
             file_contents+=str(line)
     level=json.loads(file_contents)
-    print(level)
 
     gamedata = {
         "level":level,
@@ -69,9 +69,10 @@ def load_server(address,max_size):
     print(type(gamedata))
 
     gamedata_string = json.dumps(gamedata)
+    print(gamedata_string)
 
-    zero = "0|"
-    one = "1|"
+    zero = "|0|"
+    one = "|1|"
 
     def listen_to_client(client,other_client,player_id):
         global gamedata
@@ -119,7 +120,7 @@ def load_server(address,max_size):
     client1.sendall(bytes(gamedata_string,"utf-8"))
     client2.sendall(bytes(gamedata_string,"utf-8"))
 
-    time.sleep(0.2);
+    time.sleep(1.0)
 
     client1_thread = threading.Thread(target = lambda:listen_to_client(client1,client2,0))
     client2_thread = threading.Thread(target = lambda:listen_to_client(client2,client1,1))
@@ -127,7 +128,7 @@ def load_server(address,max_size):
     client1.sendall(zero.encode())
     client2.sendall(one.encode())
 
-    time.sleep(0.1);
+    time.sleep(0.1)
 
     countdown = 8
     while countdown > 0:
