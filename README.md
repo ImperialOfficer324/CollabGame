@@ -20,20 +20,21 @@ SlimeRace is a two-player competitive race platformer where two slimes compete t
 
 ## Features
 ----------------
-+ Slime Appearance Selection and customization
++ Slime appearance selection and customization
 + Level selection and custom level support
 + Punch and freeze attacks for slimes
++ Multiplayer competition
 
 ## How to Play
 ------
 1. [Starting A Server](#starting-a-server)
 2. [Connecting A Client](#connecting-a-client)
 
-At the moment, Slimerace does not have a graphical interface for starting servers or clients. Therefore, they must be started through a terminal.
+At the moment, SlimeRace does not have a graphical interface for starting servers or clients. Therefore, they must be started through a terminal. See Below for instructions.
 
 ### Starting A Server
 -------------------------------
-A server must be run to allow two clients to connect and the race to commence. To start a server, use python 3 to run the file ```source/client.py.```
+A server must be run to allow two clients to connect and the race to commence. To start a server, use python 3 to run the file ```source/server.py.```
 
 **Linux**: ```python3 source/server.py```
 
@@ -139,7 +140,7 @@ When crafting levels, always make sure there is at least one path from the playe
 
 ### Step 3: Player Location
 -----
-Where the players start can play a key role in how a level plays. ```player_x``` and ```player_y``` define where the players spawn in. Please note that these values **do not represent tiles**. These are pixel values in the "real-world" scale of the screen.
+Where the players start can play a key role in how a level plays. ```player_x``` and ```player_y``` define where the players spawn in. Please note that these values **do not represent tiles**. These are pixel values in the "real-world" scale of the screen. Note that tile size is 76x76 pixels.
 
 **Example**: ```level1.json```
 ```json
