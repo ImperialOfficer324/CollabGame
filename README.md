@@ -1,3 +1,4 @@
+![Crown](assets/misc/crown.png)
 # SlimeRace
 
 + Version 0.1.0
@@ -10,6 +11,8 @@
 2. [Features](#features)
 3. [How to Play](#how-to-play)
 5. [Controls](#controls)
+6. [Creating Custom Levels](#creating-custom-levels)
+7. [Custom Player Appearances](#custom-player-appearances)
 
 ## About
 -------
